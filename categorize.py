@@ -7,26 +7,27 @@ noise = ['DEBIT CARD PURCHASE   ', 'XXXXX3536 ', 'XXXXX1603 ']
 def get_activity(path):
     with open(path, 'r') as csvfile:
         return DictReader(csvfile)
-    
-    
-def 
 
-if __name__ == '__main__':
-    #Initialize
-    transactions = list()
+
+def contains(categories, description):
+    pass
+
+
+def add_to_categories(categories, description):
+    pass
+
+
+def categorize()
     categories = dict() # a dict of string -> lists: categories['food'] = [money, money, money]
 
-    #Read the list looking for transactions for the current month
-    for row in GetActivityCSV(path):
-        description = row['Description']
-        transactionMonth = row['Date'].split('/')[0]
-        for item in home:
-            if item in description and (currentMonth == transactionMonth): 
-                transactions.append(row['Withdrawals'].replace('$', ''))
-                print(row['Description'])
+    # Read the list looking for transactions for the current month
+    for transaction in get_activity(path):
+        description = transaction['Description']
+        if not contains(categories, description):
+            add_to_categories(categories, description)
 
-    value = 0.0
-    for t in transactions:
-        value += float(t)
+def main():
+    pass
 
-    print(value)
+if __name__ == '__main__':
+    main()
