@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 from csv import DictReader
-
-noise = ['DEBIT CARD PURCHASE   ', 'XXXXX3536 ', 'XXXXX1603 ']
+import constants
 
 def get_activity(path):
     with open(path, 'r') as csvfile:
@@ -17,17 +16,17 @@ def add_to_categories(categories, description):
     pass
 
 
-def categorize()
+def categorize(path):
     categories = dict() # a dict of string -> lists: categories['food'] = [money, money, money]
 
-    # Read the list looking for transactions for the current month
     for transaction in get_activity(path):
         description = transaction['Description']
+        print(description)
         if not contains(categories, description):
             add_to_categories(categories, description)
 
 def main():
-    pass
+    categorize(constants.path)
 
 if __name__ == '__main__':
     main()
