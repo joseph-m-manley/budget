@@ -2,21 +2,27 @@
 
 from csv import DictReader
 import constants
+from datetime import datetime
+import re
+
+
+def relevant_activity(t):
+    return t['Withdrawals'] and datetime.now().month - 1 == int(t['Date'][0:2])
 
 
 def normalize(description):
     for n in constants.noise:
-        description = description.replace(n, '')
-    return description
+        description = re.sub(n, '', description)
+    return description.strip()
 
 
 def add_withdrawal(categories, transaction):
-    if transaction['Withdrawals']:
+    if relevant_activity(transaction):
         description = normalize(transaction['Description'])                    
         categories[description] = transaction    
 
 
-def categorize_withdrawals(path):
+def get_withdrawals(path):
     withdrawals = dict()
     with open(path) as activity:
         for transaction in DictReader(activity):
@@ -24,9 +30,17 @@ def categorize_withdrawals(path):
     return withdrawals
 
 
-def main():
-    categorize_withdrawals(constants.path)
+def categorize(withdrawals):
+    total = 0.0
+    for v in withdrawals.values():
+        total += float(v['Withdrawals'].replace('$', '').replace(',', ''))
+    print(total)
+        
 
+
+def main():
+    activity = get_withdrawals(constants.path)
+    categorize(activity)
 
 if __name__ == '__main__':
     main()
