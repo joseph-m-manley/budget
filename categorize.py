@@ -3,30 +3,30 @@
 from csv import DictReader
 import constants
 
-def get_activity(path):
-    with open(path, 'r') as csvfile:
-        return DictReader(csvfile)
+
+def normalize(description):
+    for n in constants.noise:
+        description = description.replace(n, '')
+    return description
 
 
-def contains(categories, description):
-    pass
+def add_withdrawal(categories, transaction):
+    if transaction['Withdrawals']:
+        description = normalize(transaction['Description'])                    
+        categories[description] = transaction    
 
 
-def add_to_categories(categories, description):
-    pass
+def categorize_withdrawals(path):
+    withdrawals = dict()
+    with open(path) as activity:
+        for transaction in DictReader(activity):
+            add_withdrawal(withdrawals, transaction)
+    return withdrawals
 
-
-def categorize(path):
-    categories = dict() # a dict of string -> lists: categories['food'] = [money, money, money]
-
-    for transaction in get_activity(path):
-        description = transaction['Description']
-        print(description)
-        if not contains(categories, description):
-            add_to_categories(categories, description)
 
 def main():
-    categorize(constants.path)
+    categorize_withdrawals(constants.path)
+
 
 if __name__ == '__main__':
     main()
