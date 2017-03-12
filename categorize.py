@@ -7,7 +7,9 @@ import re
 
 
 def relevant_activity(t):
-    return t['Withdrawals'] and datetime.now().month - 1 == int(t['Date'][0:2])
+    return (t['Withdrawals']
+    and datetime.now().month - 1 == int(t['Date'][0:2])
+    and 'TRANSFER' not in t['Description'])
 
 
 def normalize(description):
@@ -30,12 +32,26 @@ def get_withdrawals(path):
     return withdrawals
 
 
+def save_set(s, path):
+    with open(path, 'w+') as f:
+        f.writelines("%s\n" % item for item in set)
+
+
 def categorize(withdrawals):
-    total = 0.0
-    for v in withdrawals.values():
-        total += float(v['Withdrawals'].replace('$', '').replace(',', ''))
-    print(total)
-        
+    care = set()
+    dontcare = set()
+    for key in withdrawals.keys():
+        print(key)
+        print(withdrawals[key]['Withdrawals'])
+        x = input('Do you care about this? Y or N: ')
+        if x.upper() == 'Y':
+            care.add(key)
+        elif x.upper() == 'N':
+            dontcare.add(key)
+        elif x.upper() == 'Q':
+            break
+    save_set(care, "care.txt")
+    save_set(dontcare, "dontcare.txt")
 
 
 def main():
