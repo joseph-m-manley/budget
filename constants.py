@@ -13,4 +13,8 @@ noise = [
         'RECURRING',
         'ACH']
 
-path = 'depositAcctivityExport.csv'
+
+paths = {
+        activity: '../depositAcctivityExport.csv',
+        care: '../categories/care.txt',
+        dontcare: '../categories/care.txt'}
