@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-noise = ['DEBIT',
+noise = [
+        'DEBIT',
         'CARD PURCHASE',
         'INDIANAPOLIS?',
         'IN',
@@ -11,5 +12,5 @@ noise = ['DEBIT',
         'SQ \*',
         'RECURRING',
         'ACH']
-        
+
 path = 'depositAcctivityExport.csv'

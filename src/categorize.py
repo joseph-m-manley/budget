@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# import constants
+import constants
 import withdrawals
 
 
@@ -45,10 +45,10 @@ def categorize(keys):
     save_set(dontcare, "dontcare.txt")
 
 
-# def main():
-    # keys = withdrawals.get_keys(constants.path, constants.noise)
-    # categorize(keys)
+def main():
+    keys = withdrawals.get_keys(constants.path, constants.noise)
+    categorize(keys)
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
