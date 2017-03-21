@@ -1,19 +1,40 @@
 #!/usr/bin/env python3
 
 import constants
-import withdrawals
+from constants import paths
+import re
+from csv import DictReader
 
 
-def get_input(message, options):
+def normalize(description):
+    for n in constants.noise:
+        description = re.sub(n, '', description, flags=re.IGNORECASE)
+    return description.strip()
+
+
+def get_descriptions(path):
+    with open(path) as csv:
+        activity = DictReader(csv)
+        keys = set(transaction['Description'] for transaction in activity)
+    return keys
+
+
+def get_input(message, options=('Y', 'N', 'Q')):
     x = None
+    message += ' '
+    message += ', '.join(options[:-1])
+    message += ' or %s :' % options[-1]
     while x not in options:
-        x = input(message + ' ' + ''.join(options)).upper()
+        x = input(message).upper()
     return x
 
 
 def open_set(path):
-    with open(path, 'r') as f:
-        return set(f.readlines())
+    import os.path
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            return set(f.readlines())
+    return set()
 
 
 def save_set(s, path):
@@ -23,8 +44,7 @@ def save_set(s, path):
 
 def process_keys(keys, care, dontcare):
     for key in keys:
-        print(key)
-        x = get_input('%s: Do you care about this?' % key, ('Y', 'N', 'Q'))
+        x = get_input('%s\nDo you care about this?' % key)
         if x == 'Y':
             care.add(key)
         elif x == 'N':
@@ -33,21 +53,24 @@ def process_keys(keys, care, dontcare):
             break
 
 
-def categorize(keys):
-    care = open_set("care.txt")
-    dontcare = open_set("dontcare.txt")
+def categorize(keys, carePath, dontcarePath):
+    care = open_set(carePath)
+    dontcare = open_set(dontcarePath)
 
-    newKeys = keys.difference(care.union(dontcare))
+    old = care.union(dontcare)
+    newKeys = frozenset(keys.difference(old))
     process_keys(newKeys, care, dontcare)
 
-    x = get_input
-    save_set(care, "care.txt")
-    save_set(dontcare, "dontcare.txt")
+    if get_input('Do you want to save?') == 'Y':
+        save_set(care, carePath)
+        save_set(dontcare, dontcarePath)
 
 
 def main():
-    keys = withdrawals.get_keys(constants.path, constants.noise)
-    categorize(keys)
+    descriptions = get_descriptions(paths['activity'])
+    save_set(descriptions, 'descriptions.txt')
+    keys = set(map(normalize, descriptions))
+    categorize(keys, paths['care'], paths['dontcare'])
 
 
 if __name__ == '__main__':

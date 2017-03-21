@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
 noise = [
-        'DEBIT',
-        'CARD PURCHASE',
-        'INDIANAPOLIS?',
-        'IN',
-        'CARMEL',
-        '#',
-        'X+\d{4}',
-        '\d+',
-        'SQ \*',
+        'DEBIT CARD',
         'RECURRING',
-        'ACH']
+        'PURCHASE',
+        'INDIANAPOLIS?',
+        '\bIN\b',
+        'CARMEL',
+        '#?\b\d+',
+        'X+\d{4}',
+        '\b\w+ \*',
+        '\bACH\b']
 
-path = 'depositAcctivityExport.csv'
+paths = {
+        'activity': 'depositAcctivityExport.csv',
+        'care': '../categories/care.txt',
+        'dontcare': '../categories/dontcare.txt'}
