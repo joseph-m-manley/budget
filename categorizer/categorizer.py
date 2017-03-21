@@ -68,7 +68,6 @@ def categorize(keys, carePath, dontcarePath):
 
 def main():
     descriptions = get_descriptions(paths['activity'])
-    save_set(descriptions, 'descriptions.txt')
     keys = set(map(normalize, descriptions))
     categorize(keys, paths['care'], paths['dontcare'])
 
