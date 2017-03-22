@@ -1,2 +1,2 @@
 # categorizer
-Categorizer is a little tool that reads my bank account's activity from a CSV file and categorizes the expenditures. 
+Categorizer is a little tool that allows you to categorize the entries in a csv file.

@@ -1,0 +1,21 @@
+{
+    "noise": [
+            "DEBIT CARD",
+            "RECURRING",
+            "PURCHASE",
+            "INDIANAPOLIS?",
+            "\\bIN\\b",
+            "CARMEL",
+            "#?\\b\\d+",
+            "X+\\d{4}",
+            "\\b\\d+\\b",
+            "\\b\\w+ \\*",
+            "\\bACH\\b"
+            ],
+
+    "paths": {
+            "activity": "depositAcctivityExport.csv",
+            "care": "care.txt",
+            "dontcare": "dontcare.txt"
+            }
+}

@@ -1,29 +1,22 @@
 #!/usr/bin/env python3
 
 import constants
+import json
 from constants import paths
 import re
 from csv import DictReader
 
 
-def normalize(description):
-    for n in constants.noise:
-        description = re.sub(n, '', description, flags=re.IGNORECASE)
-    return description.strip()
-
-
-def get_descriptions(path):
-    with open(path) as csv:
-        activity = DictReader(csv)
-        keys = set(transaction['Description'] for transaction in activity)
-    return keys
+def get_config():
+    with open('config.json') as file:
+        return json.load(file)
 
 
 def get_input(message, options=('Y', 'N', 'Q')):
     x = None
     message += ' '
     message += ', '.join(options[:-1])
-    message += ' or %s :' % options[-1]
+    message += ' or %s: ' % options[-1]
     while x not in options:
         x = input(message).upper()
     return x
@@ -66,10 +59,30 @@ def categorize(keys, carePath, dontcarePath):
         save_set(dontcare, dontcarePath)
 
 
+def normalizing_func(noise):
+    def normalize(description):
+        for n in noise:
+            description = re.sub(n, '', description, flags=re.IGNORECASE)
+        return description.strip()
+    return normalize
+
+
+def normalize_keys(keys, noise):
+    normalizer = normalizing_func(noise)
+    return set(map(normalizer, keys))
+
+
+def get_column(path, col):
+    with open(path) as csv:
+        table = DictReader(csv)
+        return set(row[col] for row in table)
+
+
 def main():
-    descriptions = get_descriptions(paths['activity'])
-    keys = set(map(normalize, descriptions))
-    categorize(keys, paths['care'], paths['dontcare'])
+    config = get_config()
+    descriptions = get_column(config['paths']['activity'], 'Description')
+    keys = normalize_keys(descriptions, config['noise'])
+    categorize(keys, config['paths']['care'], config['paths']['dontcare'])
 
 
 if __name__ == '__main__':
