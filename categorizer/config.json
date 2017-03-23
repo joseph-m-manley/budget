@@ -1,4 +1,8 @@
 {
+    "csvfile": "depositAcctivityExport.csv",
+    "categories": "user/categories.json",
+    "column": "Description",
+
     "noise": [
             "DEBIT CARD",
             "RECURRING",
@@ -11,11 +15,5 @@
             "\\b\\d+\\b",
             "\\b\\w+ \\*",
             "\\bACH\\b"
-            ],
-
-    "paths": {
-            "activity": "depositAcctivityExport.csv",
-            "care": "care.txt",
-            "dontcare": "dontcare.txt"
-            }
+            ]        
 }
