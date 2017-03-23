@@ -23,21 +23,9 @@ class Test(unittest.TestCase):
         expected = {'NETFLIX.COM', 'KROGER'}
         self.assertEqual(expected, actual)
 
-    def test_flatten(self):
-        nested_list = [[1, 2], [3, 4, 5], [6], [7, 8, 9]]
-        expected = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-        actual = categorizer.flatten(nested_list)
-
-        self.assertEqual(expected, actual)
-
     @unittest.skip('requires user input')
     def test_categorize_existing(self):
-        newKeys = {'world', 'me'}
-        categories = {
-            '1': {'hello'},
-            '2': {'its'}
-            }
+        newKeys = {'hello', 'world', 'its', 'me'}
         expected = {
             '1': {'hello', 'world'},
             '2': {'its'},
@@ -46,7 +34,7 @@ class Test(unittest.TestCase):
 
         print('test existing')
         print(expected)
-        actual = categorizer.categorize(newKeys, categories)
+        actual = categorizer.categorize(newKeys)
 
         self.assertEqual(expected, actual)
 

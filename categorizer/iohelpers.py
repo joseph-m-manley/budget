@@ -15,7 +15,7 @@ def save_jsn(j, path):
 
 
 def get_config():
-    return get_json('config.jsn')
+    return get_json('config.json')
 
 
 def get_categories(path):

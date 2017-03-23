@@ -14,21 +14,19 @@ def get_input(message, options=('Y', 'N', 'Q')):
     return x
 
 
-def categorize(newKeys, categories):
-    for key in newKeys:
-        x = input('%s\nWhat category does this belong in? ' % key).upper()
+def categorize(keys, categories=dict()):
+    working = {k: set(v) for k, v in categories.items()}
+    for key in keys:
+        print(key)
+        x = input('What category does this belong in? ').upper()
         if x == 'Q':
             break
-        elif x in categories:
-            categories[x].add(key)
+        elif x in working:
+            working[x].add(key)
         else:
-            categories[x] = {key}
+            working[x] = {key}
 
-    return categories
-
-
-def flatten(list_of_lists):
-    return [x for sublist in list_of_lists for x in sublist]
+    return {k: list(v) for k, v in working.items()}
 
 
 def filter_noise(words, noise):
@@ -39,12 +37,11 @@ def filter_noise(words, noise):
 
 def main():
     config = get_config()
-
-    words = get_column(config['csvfile'], config['column'])
     categories = get_categories(config['categories'])
+    words = get_column(config['csvfilepath'], config['column'])
 
-    newKeys = filter_noise(words, config['noise'])
-    updated = categorize(newKeys, categories)
+    clean_words = filter_noise(words, config['noise'])
+    updated = categorize(clean_words, categories)
 
     if get_input('Do you want to save?') == 'Y':
         save_jsn(updated, config['categories'])
