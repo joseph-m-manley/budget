@@ -1,15 +1,26 @@
 #!/usr/bin/env python3
 
-import constants
 import json
-from constants import paths
 import re
 from csv import DictReader
 
 
-def get_config():
-    with open('config.json') as file:
+def get_json(path):
+    with open(path) as file:
         return json.load(file)
+
+
+def save_jsn(j, path):
+    with open(path, 'w+') as file:
+        json.dump(j, file, indent=4)
+
+
+def get_config():
+    return get_json('config.jsn')
+
+
+def get_categories(path):
+    return get_json(path)['categories']
 
 
 def get_input(message, options=('Y', 'N', 'Q')):
@@ -22,54 +33,33 @@ def get_input(message, options=('Y', 'N', 'Q')):
     return x
 
 
-def open_set(path):
-    import os.path
-    if os.path.exists(path):
-        with open(path, 'r') as f:
-            return set(f.readlines())
-    return set()
+def categorize(newKeys, categories=None):
+    if categories is None:
+        categories = dict()
 
-
-def save_set(s, path):
-    with open(path, 'w+') as f:
-        f.writelines("%s\n" % item for item in s)
-
-
-def process_keys(keys, care, dontcare):
-    for key in keys:
-        x = get_input('%s\nDo you care about this?' % key)
-        if x == 'Y':
-            care.add(key)
-        elif x == 'N':
-            dontcare.add(key)
-        elif x == 'Q':
+    for key in newKeys:
+        x = input('%s\nWhat category does this belong in? ' % key)
+        if x == 'Q':
             break
+        elif x in categories:
+            categories[x].add(key)
+        else:
+            categories[x] = {key}
+
+    return categories
 
 
-def categorize(keys, carePath, dontcarePath):
-    care = open_set(carePath)
-    dontcare = open_set(dontcarePath)
-
-    old = care.union(dontcare)
-    newKeys = frozenset(keys.difference(old))
-    process_keys(newKeys, care, dontcare)
-
-    if get_input('Do you want to save?') == 'Y':
-        save_set(care, carePath)
-        save_set(dontcare, dontcarePath)
+def flatten(list_of_lists):
+    return [x for sublist in list_of_lists for x in sublist]
 
 
-def normalizing_func(noise):
-    def normalize(description):
+def normalize(words, noise):
+    result = set()
+    for word in words:
         for n in noise:
-            description = re.sub(n, '', description, flags=re.IGNORECASE)
-        return description.strip()
-    return normalize
-
-
-def normalize_keys(keys, noise):
-    normalizer = normalizing_func(noise)
-    return set(map(normalizer, keys))
+            word = re.sub(n, '', word, flags=re.IGNORECASE)
+        result.add(word.strip())
+    return result
 
 
 def get_column(path, col):
@@ -80,9 +70,15 @@ def get_column(path, col):
 
 def main():
     config = get_config()
-    descriptions = get_column(config['paths']['activity'], 'Description')
-    keys = normalize_keys(descriptions, config['noise'])
-    categorize(keys, config['paths']['care'], config['paths']['dontcare'])
+
+    descriptions = get_column(config['csvfile'], config['column'])
+    newKeys = normalize(descriptions, config['noise'])
+    categories = get_categories(config['categories'])
+
+    updated = categorize(newKeys, categories)
+
+    if get_input('Do you want to save?') == 'Y':
+        save_jsn(updated, config['categories'])
 
 
 if __name__ == '__main__':
