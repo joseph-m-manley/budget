@@ -1,26 +1,7 @@
 #!/usr/bin/env python3
 
-import json
+from iohelpers import *
 import re
-from csv import DictReader
-
-
-def get_json(path):
-    with open(path) as file:
-        return json.load(file)
-
-
-def save_jsn(j, path):
-    with open(path, 'w+') as file:
-        json.dump(j, file, indent=4)
-
-
-def get_config():
-    return get_json('config.jsn')
-
-
-def get_categories(path):
-    return get_json(path)['categories']
 
 
 def get_input(message, options=('Y', 'N', 'Q')):
@@ -33,12 +14,9 @@ def get_input(message, options=('Y', 'N', 'Q')):
     return x
 
 
-def categorize(newKeys, categories=None):
-    if categories is None:
-        categories = dict()
-
+def categorize(newKeys, categories):
     for key in newKeys:
-        x = input('%s\nWhat category does this belong in? ' % key)
+        x = input('%s\nWhat category does this belong in? ' % key).upper()
         if x == 'Q':
             break
         elif x in categories:
@@ -53,28 +31,19 @@ def flatten(list_of_lists):
     return [x for sublist in list_of_lists for x in sublist]
 
 
-def normalize(words, noise):
-    result = set()
-    for word in words:
-        for n in noise:
-            word = re.sub(n, '', word, flags=re.IGNORECASE)
-        result.add(word.strip())
-    return result
-
-
-def get_column(path, col):
-    with open(path) as csv:
-        table = DictReader(csv)
-        return set(row[col] for row in table)
+def filter_noise(words, noise):
+    match = '(%s)' % ')|('.join(noise)
+    rgx = re.compile(match, re.IGNORECASE)
+    return set(re.sub(rgx, '', word).strip() for word in words)
 
 
 def main():
     config = get_config()
 
-    descriptions = get_column(config['csvfile'], config['column'])
-    newKeys = normalize(descriptions, config['noise'])
+    words = get_column(config['csvfile'], config['column'])
     categories = get_categories(config['categories'])
 
+    newKeys = filter_noise(words, config['noise'])
     updated = categorize(newKeys, categories)
 
     if get_input('Do you want to save?') == 'Y':

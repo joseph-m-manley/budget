@@ -3,10 +3,10 @@ import unittest
 
 
 class Test(unittest.TestCase):
-    def test_normalize(self):
+    def test_filter_noise(self):
         activity = [
             "RECURRING DEBIT CARD  XXXXX1234 NETFLIX.COM               NETFLIX.COM CA ",
-            "DEBIT CARD PURCHASE   XXXXX1234 KROGER #959               CITY      ST ",]
+            "DEBIT CARD PURCHASE   XXXXX1234 KROGER #959               CITY      ST "]
 
         noise = [
             "DEBIT CARD",
@@ -17,10 +17,9 @@ class Test(unittest.TestCase):
             "ST",
             "#\\d+",
             "X+\\d{4}",
-            "\\b\\d+\\b",
         ]
 
-        actual = categorizer.normalize(activity, noise)
+        actual = categorizer.filter_noise(activity, noise)
         expected = {'NETFLIX.COM', 'KROGER'}
         self.assertEqual(expected, actual)
 
@@ -32,20 +31,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
-    def test_categorize_new(self):
-        newKeys = {'hello', 'world', 'its', 'me'}
-        expected = {
-            '1': {'hello', 'world'},
-            '2': {'its'},
-            '3': {'me'}
-            }
-
-        print('test new')
-        print(expected)
-        actual = categorizer.categorize(newKeys)
-
-        self.assertEqual(expected, actual)
-
+    @unittest.skip('requires user input')
     def test_categorize_existing(self):
         newKeys = {'world', 'me'}
         categories = {
