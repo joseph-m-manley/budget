@@ -16,6 +16,7 @@ def get_input(message, options=('Y', 'N', 'Q')):
 
 def categorize(keys, categories=dict()):
     working = {k: set(v) for k, v in categories.items()}
+
     for key in keys:
         print(key)
         x = input('What category does this belong in? ').upper()

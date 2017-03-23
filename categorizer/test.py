@@ -27,9 +27,9 @@ class Test(unittest.TestCase):
     def test_categorize_existing(self):
         newKeys = {'hello', 'world', 'its', 'me'}
         expected = {
-            '1': {'hello', 'world'},
-            '2': {'its'},
-            '3': {'me'}
+            '1': ['hello', 'world'],
+            '2': ['its'],
+            '3': ['me']
             }
 
         print('test existing')
