@@ -4,28 +4,46 @@ import unittest
 
 class Test(unittest.TestCase):
     def test_filter_noise(self):
-        activity = [
-            "RECURRING DEBIT CARD  XXXXX1234 NETFLIX.COM               NETFLIX.COM CA ",
-            "DEBIT CARD PURCHASE   XXXXX1234 KROGER #959               CITY      ST "]
+        words = ['hello xxxx1234', 'foo world', 'its#9999', '    me   ']
+        noise = ["foo", "#\\d+", "X+\\d{4}"]
 
-        noise = [
-            "DEBIT CARD",
-            "RECURRING",
-            "PURCHASE",
-            "NETFLIX.COM CA",
-            "CITY",
-            "ST",
-            "#\\d+",
-            "X+\\d{4}",
-        ]
+        expected = {'hello', 'world', 'its', 'me'}
+        actual = categorizer.filter_noise(words, noise)
 
-        actual = categorizer.filter_noise(activity, noise)
-        expected = {'NETFLIX.COM', 'KROGER'}
+        self.assertEqual(expected, actual)
+
+    def test_filter_duplicates(self):
+        words = ['hello', 'world', 'its', 'me']
+        dupes = ['hello', 'world']
+
+        expected = {'its', 'me'}
+        actual = categorizer.filter_duplicates(words, dupes)
+
+        self.assertEqual(expected, actual)
+
+    @unittest.skip('requires user input')
+    def test_categorize_new(self):
+        newKeys = {'hello', 'world', 'its', 'me'}
+        expected = {
+            '1': ['hello', 'world'],
+            '2': ['its'],
+            '3': ['me']
+            }
+
+        print('test new')
+        print(expected)
+        actual = categorizer.categorize(newKeys)
+
         self.assertEqual(expected, actual)
 
     @unittest.skip('requires user input')
     def test_categorize_existing(self):
         newKeys = {'hello', 'world', 'its', 'me'}
+        existing = {
+            '1': ['hello'],
+            '3': ['me']
+            }
+
         expected = {
             '1': ['hello', 'world'],
             '2': ['its'],

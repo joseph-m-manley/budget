@@ -30,16 +30,22 @@ def categorize(keys, categories=dict()):
     return {k: list(v) for k, v in working.items()}
 
 
+def rgx_filter(words, noise, func):
+    matcher = '(%s)' % ')|('.join(noise)
+    rgx = re.compile(matcher, re.IGNORECASE)
+    return func(rgx, words)
+
+
 def filter_noise(words, noise):
-    match = '(%s)' % ')|('.join(noise)
-    rgx = re.compile(match, re.IGNORECASE)
-    return set(re.sub(rgx, '', word).strip() for word in words)
+    def rm_noise(rgx, words):
+        return set(re.sub(rgx, '', word).strip() for word in words)
+    return rgx_filter(words, noise, func)
 
 
-def filter_matches(words, matches)
-    match = '(%s)' % ')|('.join(noise)
-    rgx = re.compile(match, re.IGNORECASE)
-    return set(filter(lambda w: re.match(rgx,w) is not None, words))
+def filter_duplicates(words, dupes):
+    def rm_dupes(rgx, words):
+        return set(filter(lambda w: not rgx.search(w), words))
+    return rgx_filter(words, dupes, func)
 
 
 def main():
