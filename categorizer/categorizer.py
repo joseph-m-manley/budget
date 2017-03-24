@@ -41,12 +41,13 @@ def preprocess(words, noise, duplicates):
 
 def main():
     config = get_config()
+    noise = get_noise(config['noise'])
     categories = get_categories(config['categories'])
-    new_words = get_column(config['csvfilepath'], config['column'])
+    raw_words = get_column(config['csvfilepath'], config['column'])
 
     known_words = flatten(categories.values())
-    unknown_words = preprocess(new_words, config['noise'], known_words)
-    categorized = categorize(unknown_words, categories)
+    new_words = preprocess(raw_words, noise, known_words)
+    categorized = categorize(new_words, categories)
 
     if get_input('Do you want to save?') == 'Y':
         save_jsn(categorized, categorized)
