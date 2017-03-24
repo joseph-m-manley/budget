@@ -4,28 +4,44 @@ from iohelpers import *
 from reghelpers import *
 
 
-def get_input(message, options=('Y', 'N', 'Q')):
+def get_input(msg, opt=['Y', 'N', 'Q']):
     x = None
-    message += ' '
-    message += ', '.join(options[:-1])
-    message += ' or %s: ' % options[-1]
-    while x not in options:
+    message = '{} {} or {}: '.format(msg, ', '.join(opt[:-1]), opt[-1])
+    choices = opt + ['']
+    while x not in choices:
         x = input(message).upper()
     return x
 
 
+def ask_for_key(word):
+    if len(word) < 20:
+        return word
+    x = get_input('Would you like to assign a key? ')
+    if x != 'Y':
+        return word
+    else:
+        return input('Key: ').upper()
+
+
 def categorize(words, categories=dict()):
     working = {k: set(v) for k, v in categories.items()}
+    shown = []
 
     for word in words:
-        print(word)
-        x = input('What category does this belong in? ').upper()
-        if x == 'Q':
-            break
-        elif x in working:
-            working[x].add(word)
-        else:
-            working[x] = {word}
+        if word not in shown:
+            shown.append(word)
+
+            print('\n%s' % word)
+
+            key = ask_for_key(word)
+
+            x = input('What category does this belong in? ').upper()
+            if x == 'Q':
+                break
+            elif x in working:
+                working[x].add(key)
+            else:
+                working[x] = {key}
 
     return {k: list(v) for k, v in working.items()}
 
@@ -42,7 +58,7 @@ def preprocess(words, noise, duplicates):
 def main():
     config = get_config()
     noise = get_noise(config['noise'])
-    categories = get_categories(config['categories'])
+    categories = get_json(config['categories'])
     raw_words = get_column(config['csvfilepath'], config['column'])
 
     known_words = flatten(categories.values())
@@ -50,7 +66,7 @@ def main():
     categorized = categorize(new_words, categories)
 
     if get_input('Do you want to save?') == 'Y':
-        save_jsn(categorized, categorized)
+        save_jsn(categorized, config['categories'])
 
 
 if __name__ == '__main__':

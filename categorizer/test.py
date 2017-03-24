@@ -66,7 +66,7 @@ class Test(unittest.TestCase):
 
     @unittest.skip('requires user input')
     def test_categorize_existing(self):
-        newKeys = {'hello', 'world', 'its', 'me'}
+        newKeys = {'hello', 'world', 'world', 'its', 'me'}
         existing = {
             '1': ['hello'],
             '3': ['me']
@@ -80,9 +80,9 @@ class Test(unittest.TestCase):
 
         print('test existing')
         print(expected)
-        actual = categorizer.categorize(newKeys)
+        actual = categorizer.categorize(newKeys, existing)
 
-        self.assertEqual(expected, actual)
+        self.assertEqual(sorted(expected), sorted(actual))
 
 
 if __name__ == '__main__':

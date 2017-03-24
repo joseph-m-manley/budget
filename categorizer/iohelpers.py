@@ -22,10 +22,6 @@ def get_noise(path):
     return get_json(path)['noise']
 
 
-def get_categories(path):
-    return get_json(path)['categories']
-
-
 def get_column(path, col):
     with open(path) as csv:
         table = DictReader(csv)
