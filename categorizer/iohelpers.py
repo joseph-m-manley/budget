@@ -26,3 +26,4 @@ def get_column(path, col):
     with open(path) as csv:
         table = DictReader(csv)
         return set(row[col] for row in table)
+
