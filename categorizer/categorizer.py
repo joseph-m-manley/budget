@@ -36,6 +36,12 @@ def filter_noise(words, noise):
     return set(re.sub(rgx, '', word).strip() for word in words)
 
 
+def filter_matches(words, matches)
+    match = '(%s)' % ')|('.join(noise)
+    rgx = re.compile(match, re.IGNORECASE)
+    return set(filter(lambda w: re.match(rgx,w) is not None, words))
+
+
 def main():
     config = get_config()
     categories = get_categories(config['categories'])
