@@ -14,32 +14,42 @@ def get_input(message, options=('Y', 'N', 'Q')):
     return x
 
 
-def categorize(keys, categories=dict()):
+def categorize(words, categories=dict()):
     working = {k: set(v) for k, v in categories.items()}
 
-    for key in keys:
-        print(key)
+    for word in words:
+        print(word)
         x = input('What category does this belong in? ').upper()
         if x == 'Q':
             break
         elif x in working:
-            working[x].add(key)
+            working[x].add(word)
         else:
-            working[x] = {key}
+            working[x] = {word}
 
     return {k: list(v) for k, v in working.items()}
+
+
+def flatten(list_of_lists):
+    return [item for _list in list_of_lists for item in _list]
+
+
+def preprocess(words, noise, duplicates):
+    normalized_words = filter_noise(words, set(noise))
+    return filter_duplicates(normalized_words, set(duplicates))
 
 
 def main():
     config = get_config()
     categories = get_categories(config['categories'])
-    words = get_column(config['csvfilepath'], config['column'])
+    new_words = get_column(config['csvfilepath'], config['column'])
 
-    clean_words = filter_noise(words, config['noise'])
-    updated = categorize(clean_words, categories)
+    known_words = flatten(categories.values())
+    unknown_words = preprocess(new_words, config['noise'], known_words)
+    categorized = categorize(unknown_words, categories)
 
     if get_input('Do you want to save?') == 'Y':
-        save_jsn(updated, config['categories'])
+        save_jsn(categorized, categorized)
 
 
 if __name__ == '__main__':

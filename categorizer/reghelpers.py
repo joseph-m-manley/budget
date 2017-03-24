@@ -12,10 +12,13 @@ def rgx_filter(words, noise, func):
 def filter_noise(words, noise):
     def rm_noise(rgx, words):
         return set(re.sub(rgx, '', word).strip() for word in words)
-    return rgx_filter(words, noise, func)
+    return rgx_filter(words, noise, rm_noise)
 
 
 def filter_duplicates(words, dupes):
+    if not dupes:
+        return set(words)
+
     def rm_dupes(rgx, words):
         return set(filter(lambda w: not rgx.search(w), words))
-    return rgx_filter(words, dupes, func)
+    return rgx_filter(words, dupes, rm_dupes)

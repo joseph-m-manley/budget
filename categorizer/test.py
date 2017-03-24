@@ -1,4 +1,5 @@
 import categorizer
+import reghelpers
 import unittest
 
 
@@ -8,7 +9,7 @@ class Test(unittest.TestCase):
         noise = ["foo", "#\\d+", "X+\\d{4}"]
 
         expected = {'hello', 'world', 'its', 'me'}
-        actual = categorizer.filter_noise(words, noise)
+        actual = reghelpers.filter_noise(words, noise)
 
         self.assertEqual(expected, actual)
 
@@ -17,7 +18,34 @@ class Test(unittest.TestCase):
         dupes = ['hello', 'world']
 
         expected = {'its', 'me'}
-        actual = categorizer.filter_duplicates(words, dupes)
+        actual = reghelpers.filter_duplicates(words, dupes)
+
+        self.assertEqual(expected, actual)
+
+    def test_filter_empty_duplicates(self):
+        words = ['hello', 'world', 'its', 'me']
+        dupes = []
+
+        expected = {'hello', 'world', 'its', 'me'}
+        actual = reghelpers.filter_duplicates(words, dupes)
+
+        self.assertEqual(expected, actual)
+
+    def test_flatten(self):
+        nested_list = [[1, 2], [3, 4, 5], [6], [7, 8, 9]]
+
+        expected = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        actual = categorizer.flatten(nested_list)
+
+        self.assertEqual(expected, actual)
+
+    def test_preprocess(self):
+        words = ['hello xxxx1234', 'foo world', 'its#9999', '    me   ']
+        noise = ["foo", "#\\d+", "X+\\d{4}"]
+        dupes = ['its', 'me']
+
+        expected = {'hello', 'world'}
+        actual = categorizer.preprocess(words, noise, dupes)
 
         self.assertEqual(expected, actual)
 

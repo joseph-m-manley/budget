@@ -4,7 +4,9 @@
     "column": "Description",
 
     "noise": [
-            "DEBIT CARD",
+            "DEBIT",
+            "CREDIT",
+            "CARD",
             "RECURRING",
             "PURCHASE",
             "DEBIT",
