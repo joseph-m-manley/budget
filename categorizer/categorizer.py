@@ -1,43 +1,51 @@
 #!/usr/bin/env python3
 
 from iohelpers import *
-from reghelpers import *
+from listhelpers import *
 
 
-def assign_keys(words, categories=dict()):
-    working = {k: set(v) for k, v in categories.items()}
-    known_words = set(flatten(working.values()))
-
-    unknown_words = filter_duplicates(words, known_words)
-
-    for phrase in unknown_words:
-        if not contains_any(phrase, known_words):
-            known_words.add(phrase)
-
-            print('\n%s' % phrase)
-            key = phrase
-            if len(key) > 15:
-                x = input('Assign a key? ').upper()
-                if x not in ('Y', 'Q', 'N', ''):
-                    key = x
-                elif x == 'Y':
-                    key = input('Key: ').upper()
-
-            x = input('What category does this belong in? ').upper()
-            if x == 'Q':
-                break
-            if x == '':
-                continue
-            elif x in working:
-                working[x].add(key)
-            else:
-                working[x] = {key}
-
-    return {k: list(v) for k, v in working.items()}
+def dict_of_sets(d):
+    return {k: set(v) for k, v in d.items()}
 
 
-def flatten(list_of_lists):
-    return [item for _list in list_of_lists for item in _list]
+def dict_of_lists(d):
+    return {k: list(v) for k, v in d.items()}
+
+
+def assign_keys(phrase, category_dict):
+    print('\n%s' % phrase)
+    key = phrase
+    if len(key) > 15:
+        x = input('Assign a key? ').upper()
+        if x not in ('Y', 'Q', 'N', ''):
+            key = x
+        elif x == 'Y':
+            key = input('Key: ').upper()
+
+    x = input('What category does this belong in? ').upper()
+    if x == 'Q':
+        raise Exception()
+    if x == '':
+        return
+    elif x in category_dict:
+        category_dict[x].add(key)
+    else:
+        category_dict[x] = {key}
+
+
+def categorize(phrases, categories):
+    result = dict_of_sets(categories)
+    known_words = set(flatten(result.values()))
+    unknown_phrases = filter_duplicates(phrases, known_words)
+
+    try:
+        for phrase in unknown_phrases:
+            if not contains_any(phrase, known_words):
+                known_words.add(phrase)
+                assign_keys(phrase, result)
+
+    finally:
+        return dict_of_lists(result)
 
 
 def main():
@@ -45,10 +53,10 @@ def main():
     noise = get_noise(config['noise'])
     existing_categories = get_json(config['categories'])
 
-    raw_words = get_column(config['csvfilepath'], config['column'])
-    normalized_words = filter_noise(raw_words, noise)
+    raw_phrases = get_column(config['csvfilepath'], config['column'])
+    normalized_phrases = filter_noise(raw_phrases, noise)
 
-    categorized = assign_keys(normalized_words, existing_categories)
+    categorized = categorize(normalized_phrases, existing_categories)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':
         save_jsn(categorized, config['categories'])
