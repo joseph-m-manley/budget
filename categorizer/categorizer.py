@@ -12,6 +12,13 @@ def dict_of_lists(d):
     return {k: list(v) for k, v in d.items()}
 
 
+def add_category(category, value_to_add, categories):
+    if category in categories:
+        categories[category].add(value_to_add)
+    else:
+        categories[category] = {value_to_add}
+
+
 def ask_for_key(phrase):
     print('\n%s' % phrase)
     key = phrase
@@ -24,9 +31,9 @@ def ask_for_key(phrase):
     return key
 
 
-def categorize(phrases, categories):
-    result = dict_of_sets(categories)
-    known_words = set(flatten(result.values()))
+def merge_categories(phrases, categories):
+    merged = dict_of_sets(categories)
+    known_words = set(flatten(merged.values()))
     unknown_phrases = filter_duplicates(phrases, known_words)
 
     for phrase in unknown_phrases:
@@ -34,28 +41,30 @@ def categorize(phrases, categories):
             key = ask_for_key(phrase)
             known_words.add(key)
 
-            x = input('What category does this belong in? ').upper()
-            if x == 'Q':
-                break
-            elif x == '':
+            category = input('What category does this belong in? ').upper()
+            if category == 'Q':
+                break  # quit
+            elif category == '':
                 continue  # skip this item
-            elif x in result:
-                result[x].add(key)
-            else:
-                result[x] = {key}
 
-    return dict_of_lists(result)
+            add_category(category, key, merged)
+
+    return dict_of_lists(merged)
 
 
-def main():
-    config = get_config()
+def categorize(config):
     noise = get_noise(config['noise'])
     existing_categories = get_json(config['categories'])
 
     raw_phrases = get_column(config['csvfilepath'], config['column'])
     normalized_phrases = filter_noise(raw_phrases, noise)
 
-    categorized = categorize(normalized_phrases, existing_categories)
+    return merge_categories(normalized_phrases, existing_categories)
+
+
+def main():
+    config = get_config()
+    categorized = categorize(config)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':
         save_jsn(categorized, config['categories'])
