@@ -12,7 +12,7 @@ def dict_of_lists(d):
     return {k: list(v) for k, v in d.items()}
 
 
-def assign_keys(phrase, category_dict):
+def ask_for_key(phrase):
     print('\n%s' % phrase)
     key = phrase
     if len(key) > 15:
@@ -21,16 +21,7 @@ def assign_keys(phrase, category_dict):
             key = x
         elif x == 'Y':
             key = input('Key: ').upper()
-
-    x = input('What category does this belong in? ').upper()
-    if x == 'Q':
-        raise Exception()
-    if x == '':
-        return
-    elif x in category_dict:
-        category_dict[x].add(key)
-    else:
-        category_dict[x] = {key}
+    return key
 
 
 def categorize(phrases, categories):
@@ -38,14 +29,22 @@ def categorize(phrases, categories):
     known_words = set(flatten(result.values()))
     unknown_phrases = filter_duplicates(phrases, known_words)
 
-    try:
-        for phrase in unknown_phrases:
-            if not contains_any(phrase, known_words):
-                known_words.add(phrase)
-                assign_keys(phrase, result)
+    for phrase in unknown_phrases:
+        if not contains_any(phrase, known_words):
+            key = ask_for_key(phrase)
+            known_words.add(key)
 
-    finally:
-        return dict_of_lists(result)
+            x = input('What category does this belong in? ').upper()
+            if x == 'Q':
+                break
+            elif x == '':
+                continue  # skip this item
+            elif x in result:
+                result[x].add(key)
+            else:
+                result[x] = {key}
+
+    return dict_of_lists(result)
 
 
 def main():

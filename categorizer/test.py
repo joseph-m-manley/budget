@@ -53,7 +53,7 @@ class HelpersTest(unittest.TestCase):
 
 
 class AssignKeyTest(unittest.TestCase):
-    # @unittest.skip('requires user input')
+    @unittest.skip('requires user input')
     def test_categorize_to_existing_keymap(self):
         newKeys = {
             'hello', 'honey', 'honey',
@@ -76,6 +76,24 @@ class AssignKeyTest(unittest.TestCase):
             }
 
         print("honey: 1,  me: 2,  your: 3,  ralph: 4")
+        actual = categorizer.categorize(newKeys, existing)
+
+        for key in expected:
+            self.assertEqual(sorted(expected[key]), sorted(actual[key]))
+
+    # @unittest.skip('requires user input')
+    def test_categorize_should_not_ask_if_entry_matches_existing_key(self):
+        newKeys = {
+            'bing bang boom hello',
+            'frazzle hello dazzle',
+            'world is so very big',
+            'oh what a wonderful world'
+            }
+
+        existing = dict()
+        expected = {'1': ['HELLO'], '2': ['WORLD']}
+
+        print('hello: 1,  world: 2')
         actual = categorizer.categorize(newKeys, existing)
 
         for key in expected:
