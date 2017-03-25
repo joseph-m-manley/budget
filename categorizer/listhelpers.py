@@ -3,6 +3,10 @@
 import re
 
 
+def flatten(list_of_lists):
+    return [item for _list in list_of_lists for item in _list]
+
+
 def join_patterns(patterns):
     matcher = '(%s)' % ')|('.join(patterns)
     return re.compile(matcher, re.IGNORECASE)
@@ -13,10 +17,10 @@ def filter_noise(words, noise):
     return set(rgx.sub('', word).strip() for word in words)
 
 
-def contains_any(phrase, words_to_match):
-    if not words_to_match:
+def contains_any(phrase, words_in_phrase):
+    if not words_in_phrase:
         return False
-    rgx = join_patterns(words_to_match)
+    rgx = join_patterns(words_in_phrase)
     return bool(rgx.search(phrase))
 
 
