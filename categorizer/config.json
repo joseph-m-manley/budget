@@ -1,20 +1,6 @@
 {
+    "column": "Description",
     "csvfilepath": "../user/depositAcctivityExport.csv",
     "categories": "../user/categories.json",
-    "column": "Description",
-
-    "noise": [
-            "DEBIT CARD",
-            "RECURRING",
-            "PURCHASE",
-            "DEBIT",
-            "INDIANAPOLIS?",
-            "\\bIN\\b",
-            "CARMEL",
-            "#?\\b\\d+",
-            "X+\\d{4}",
-            "\\b\\d+\\b",
-            "\\*",
-            "\\bACH\\b"
-            ]        
+    "noise": "../user/noise.json"
 }

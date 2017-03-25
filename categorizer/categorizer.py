@@ -1,51 +1,53 @@
 #!/usr/bin/env python3
 
 from iohelpers import *
-import re
+from reghelpers import *
 
 
-def get_input(message, options=('Y', 'N', 'Q')):
-    x = None
-    message += ' '
-    message += ', '.join(options[:-1])
-    message += ' or %s: ' % options[-1]
-    while x not in options:
-        x = input(message).upper()
-    return x
-
-
-def categorize(keys, categories=dict()):
+def categorize(words, categories=dict()):
     working = {k: set(v) for k, v in categories.items()}
+    known_words = set(flatten(working.values()))
 
-    for key in keys:
-        print(key)
-        x = input('What category does this belong in? ').upper()
-        if x == 'Q':
-            break
-        elif x in working:
-            working[x].add(key)
-        else:
-            working[x] = {key}
+    unknown_words = filter_duplicates(words, known_words)
+
+    for word in unknown_words:
+        if word not in known_words:
+            known_words.add(word)
+
+            print('\n%s' % word)
+            key = word
+            if len(key) > 15 and input('Assign a key? ').upper() == 'Y':
+                key = input('Key: ').upper()
+
+            x = input('What category does this belong in? ').upper()
+            if x == 'Q':
+                break
+            if x == '':
+                continue
+            elif x in working:
+                working[x].add(key)
+            else:
+                working[x] = {key}
 
     return {k: list(v) for k, v in working.items()}
 
 
-def filter_noise(words, noise):
-    match = '(%s)' % ')|('.join(noise)
-    rgx = re.compile(match, re.IGNORECASE)
-    return set(re.sub(rgx, '', word).strip() for word in words)
+def flatten(list_of_lists):
+    return [item for _list in list_of_lists for item in _list]
 
 
 def main():
     config = get_config()
-    categories = get_categories(config['categories'])
-    words = get_column(config['csvfilepath'], config['column'])
+    noise = get_noise(config['noise'])
+    existing_categories = get_json(config['categories'])
 
-    clean_words = filter_noise(words, config['noise'])
-    updated = categorize(clean_words, categories)
+    raw_words = get_column(config['csvfilepath'], config['column'])
+    normalized_words = filter_noise(raw_words, noise)
 
-    if get_input('Do you want to save?') == 'Y':
-        save_jsn(updated, config['categories'])
+    categorized = categorize(normalized_words, existing_categories)
+
+    if input('Do you want to save? Y or N: ').upper() == 'Y':
+        save_jsn(categorized, config['categories'])
 
 
 if __name__ == '__main__':
