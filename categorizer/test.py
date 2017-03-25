@@ -1,5 +1,5 @@
 import categorizer
-import reghelpers
+import listhelpers
 import unittest
 
 
@@ -26,7 +26,7 @@ class HelpersTest(unittest.TestCase):
         dupes = ['hello', 'world']
 
         expected = {'its', 'me'}
-        actual = reghelpers.filter_duplicates(words, dupes)
+        actual = listhelpers.filter_duplicates(words, dupes)
 
         self.assertEqual(expected, actual)
 
@@ -35,7 +35,7 @@ class HelpersTest(unittest.TestCase):
         dupes = []
 
         expected = {'hello', 'world', 'its', 'me'}
-        actual = reghelpers.filter_duplicates(words, dupes)
+        actual = listhelpers.filter_duplicates(words, dupes)
 
         self.assertEqual(expected, actual)
 
@@ -43,18 +43,18 @@ class HelpersTest(unittest.TestCase):
         word = 'hello world its me'
         possible_duplicates = ['its', 'a', 'beautiful', 'world']
 
-        self.assertTrue(reghelpers.contains_any(word, possible_duplicates))
+        self.assertTrue(listhelpers.contains_any(word, possible_duplicates))
 
     def test_contains_any_should_ignore_empty_set(self):
         phrase = 'hello world'
         words_to_match = []
 
-        self.assertFalse(reghelpers.contains_any(phrase, words_to_match))
+        self.assertFalse(listhelpers.contains_any(phrase, words_to_match))
 
 
 class AssignKeyTest(unittest.TestCase):
     # @unittest.skip('requires user input')
-    def test_assign_keys_to_existing_keymap(self):
+    def test_categorize_to_existing_keymap(self):
         newKeys = {
             'hello', 'honey', 'honey',
             'its', 'me',
@@ -76,7 +76,7 @@ class AssignKeyTest(unittest.TestCase):
             }
 
         print("honey: 1,  me: 2,  your: 3,  ralph: 4")
-        actual = categorizer.assign_keys(newKeys, existing)
+        actual = categorizer.categorize(newKeys, existing)
 
         for key in expected:
             self.assertEqual(sorted(expected[key]), sorted(actual[key]))
