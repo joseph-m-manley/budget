@@ -14,7 +14,7 @@ class HelpersTest(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_flatten(self):
-        nested_list = [[1, 2], [3, 4, 5], [6], [7, 8, 9]]
+        nested_list = [[1, 2], [3, 4, 5], [6], [], [7, 8, 9]]
 
         expected = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         actual = categorizer.flatten(nested_list)
@@ -30,7 +30,7 @@ class HelpersTest(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
-    def test_filter_duplicates_should_ignore_empty_dupes(self):
+    def test_filter_duplicates_should_ignore_empty_dup_list(self):
         words = ['hello', 'world', 'its', 'me']
         dupes = []
 
