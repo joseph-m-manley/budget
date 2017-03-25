@@ -3,22 +3,25 @@
 import re
 
 
-def rgx_filter(words, noise, func):
-    matcher = '(%s)' % ')|('.join(noise)
-    rgx = re.compile(matcher, re.IGNORECASE)
-    return func(rgx, words)
+def join_patterns(patterns):
+    matcher = '(%s)' % ')|('.join(patterns)
+    return re.compile(matcher, re.IGNORECASE)
 
 
 def filter_noise(words, noise):
-    def rm_noise(rgx, words):
-        return set(re.sub(rgx, '', word).strip() for word in words)
-    return rgx_filter(words, noise, rm_noise)
+    rgx = join_patterns(noise)
+    return set(rgx.sub('', word).strip() for word in words)
 
 
-def filter_duplicates(words, dupes):
-    if not dupes:
-        return set(words)
+def contains_any(phrase, words_to_match):
+    if not words_to_match:
+        return False
+    rgx = join_patterns(words_to_match)
+    return bool(rgx.search(phrase))
 
-    def rm_dupes(rgx, words):
-        return set(filter(lambda w: not rgx.search(w), words))
-    return rgx_filter(words, dupes, rm_dupes)
+
+def filter_duplicates(phrases, words_to_filter):
+    if not words_to_filter:
+        return set(phrases)
+    return set(filter(
+        lambda phrase: not contains_any(phrase, words_to_filter), phrases))

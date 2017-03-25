@@ -4,18 +4,18 @@ from iohelpers import *
 from reghelpers import *
 
 
-def categorize(words, categories=dict()):
+def assign_keys(words, categories=dict()):
     working = {k: set(v) for k, v in categories.items()}
     known_words = set(flatten(working.values()))
 
     unknown_words = filter_duplicates(words, known_words)
 
-    for word in unknown_words:
-        if word not in known_words:
-            known_words.add(word)
+    for phrase in unknown_words:
+        if not contains_any(phrase, known_words):
+            known_words.add(phrase)
 
-            print('\n%s' % word)
-            key = word
+            print('\n%s' % phrase)
+            key = phrase
             if len(key) > 15:
                 x = input('Assign a key? ').upper()
                 if x not in ('Y', 'Q', 'N', ''):
@@ -48,7 +48,7 @@ def main():
     raw_words = get_column(config['csvfilepath'], config['column'])
     normalized_words = filter_noise(raw_words, noise)
 
-    categorized = categorize(normalized_words, existing_categories)
+    categorized = assign_keys(normalized_words, existing_categories)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':
         save_jsn(categorized, config['categories'])

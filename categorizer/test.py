@@ -30,7 +30,7 @@ class HelpersTest(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
-    def test_filter_duplicates_should_ignore_empty_dup_list(self):
+    def test_filter_duplicates_should_ignore_empty_list(self):
         words = ['hello', 'world', 'its', 'me']
         dupes = []
 
@@ -39,10 +39,22 @@ class HelpersTest(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
+    def test_contains_any(self):
+        word = 'hello world its me'
+        possible_duplicates = ['its', 'a', 'beautiful', 'world']
 
-class CategorizeTest(unittest.TestCase):
+        self.assertTrue(reghelpers.contains_any(word, possible_duplicates))
+
+    def test_contains_any_should_ignore_empty_set(self):
+        phrase = 'hello world'
+        words_to_match = []
+
+        self.assertFalse(reghelpers.contains_any(phrase, words_to_match))
+
+
+class AssignKeyTest(unittest.TestCase):
     # @unittest.skip('requires user input')
-    def test_categorize_existing(self):
+    def test_assign_keys_to_existing_keymap(self):
         newKeys = {
             'hello', 'honey', 'honey',
             'its', 'me',
@@ -64,7 +76,7 @@ class CategorizeTest(unittest.TestCase):
             }
 
         print("honey: 1,  me: 2,  your: 3,  ralph: 4")
-        actual = categorizer.categorize(newKeys, existing)
+        actual = categorizer.assign_keys(newKeys, existing)
 
         for key in expected:
             self.assertEqual(sorted(expected[key]), sorted(actual[key]))

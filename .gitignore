@@ -1,6 +1,6 @@
 # User files
 /user
-settings.json
+.vscode
 *~
 
 # Byte-compiled / optimized / DLL files
