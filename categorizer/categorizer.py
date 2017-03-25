@@ -16,8 +16,12 @@ def categorize(words, categories=dict()):
 
             print('\n%s' % word)
             key = word
-            if len(key) > 15 and input('Assign a key? ').upper() == 'Y':
-                key = input('Key: ').upper()
+            if len(key) > 15:
+                x = input('Assign a key? ').upper()
+                if x not in ('Y', 'Q', 'N', ''):
+                    key = x
+                elif x == 'Y':
+                    key = input('Key: ').upper()
 
             x = input('What category does this belong in? ').upper()
             if x == 'Q':
