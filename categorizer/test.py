@@ -96,6 +96,7 @@ class AssignKeyTest(unittest.TestCase):
         print('hello: 1,  world: 2')
         actual = categorizer.merge_categories(newKeys, existing)
 
+        self.assertEqual(list(expected.keys()), list(actual.keys()))
         for key in expected:
             self.assertEqual(sorted(expected[key]), sorted(actual[key]))
 
