@@ -3,6 +3,18 @@
 import re
 
 
+def dict_of_sets(d):
+    return {k: set(v) for k, v in d.items()}
+
+
+def dict_of_lists(d):
+    return {k: list(v) for k, v in d.items()}
+
+
+def invert_dict(d):
+    return {value: key for key in d for value in d[key]}
+
+
 def flatten(list_of_lists):
     return [item for _list in list_of_lists for item in _list]
 

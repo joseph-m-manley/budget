@@ -1,27 +1,7 @@
 #!/usr/bin/env python3
-import json
-from csv import DictReader
 from datetime import datetime
-
-
-def get_json(path):
-    with open(path) as file:
-        return json.load(file)
-
-
-def save_json(j, path):
-    with open(path, 'w+') as file:
-        json.dump(j, file, indent=4)
-
-
-def get_table(path):
-    with open(path) as csv:
-        table = DictReader(csv)
-        return list(table)
-
-
-def invert_dict(d):
-    return {value: key for key in d for value in d[key]}
+import helpers.iohelpers as iohelpers
+from helpers.collectionUtilities import invert_dict
 
 
 def get_transaction_amount(t):
@@ -46,18 +26,20 @@ def summarize(categories, activity):
             if is_relevant(transaction, description):
                 category = descriptions[description]
                 expenses[category] += get_transaction_amount(transaction)
+                break
 
     return expenses
 
 
 def main():
-    config = get_json('../categorizer/config.json')
+    config = iohelpers.get_config()
 
-    categories = get_json(config['categories'])
-    activity = get_table(config['csvfilepath'])
+    categories = iohelpers.get_json(config['categories'])
+    activity = iohelpers.get_table(config['csvfilepath'])
 
     expenses = summarize(categories, activity)
-    save_json(expenses, '../user/expenses.json')
+
+    iohelpers.save_json(expenses, config['expenses'])
 
 
 if __name__ == '__main__':

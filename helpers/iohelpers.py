@@ -9,7 +9,7 @@ def get_json(path):
         return json.load(file)
 
 
-def save_jsn(j, path):
+def save_json(j, path):
     with open(path, 'w+') as file:
         json.dump(j, file, indent=4)
 
@@ -27,3 +27,8 @@ def get_column(path, col):
         table = DictReader(csv)
         return set(row[col] for row in table)
 
+
+def get_table(path):
+    with open(path) as csv:
+        table = DictReader(csv)
+        return list(table)
