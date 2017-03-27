@@ -27,30 +27,37 @@ class HelpersTest(unittest.TestCase):
 
 
 class SummarizerTest(unittest.TestCase):
-    def test_summarize(self):
-        categories = {
+    def setUp(self):
+        self.categories = {
             'food': ['kroger', 'grocery', 'jimmy johns'],
             'gas': ['marathon'],
             'bill': ['electric', 'water'],
             'income': ['paycheck']
             }
+        self.expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 100.0}
+
+    def test_summarize_should_summarize(self):
         activity = [
             {'Description': 'kroger #450', 'Withdrawals': '10.0', 'Deposits': ''},
-            {'Description': 'local grocery store', 'Withdrawals': '10.0', 'Deposits': ''},
+            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '100.0'},
             {'Description': 'jimmy johns - downtown', 'Withdrawals': '5.0', 'Deposits': ''},
-            {'Description': 'marathon', 'Withdrawals': '15.5', 'Deposits': '30.0'},
             {'Description': 'electric company', 'Withdrawals': '25.25', 'Deposits': ''},
+            {'Description': 'marathon', 'Withdrawals': '15.5', 'Deposits': '30.0'},
             {'Description': 'water utility co', 'Withdrawals': '25.0', 'Deposits': ''},
-            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '100.0'}
+            {'Description': 'local grocery store', 'Withdrawals': '10.0', 'Deposits': ''},
         ]
 
-        expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 100.0}
-        actual = summarizer.summarize(categories, activity)
+        actual = summarizer.summarize(self.categories, activity)
 
-        self.assertEqual(len(expected.keys()), len(actual.keys()))
-        for k in expected:
-            self.assertAlmostEqual(expected[k], actual[k])
+        self.assertEqual(len(self.expected.keys()), len(actual.keys()))
+        for k in self.expected:
+            self.assertAlmostEqual(self.expected[k], actual[k])
 
+    def test_summarizer_should_ignore_order(self):
+        pass
+
+    def test_summarizer_should_ignore_uknown_activity(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
