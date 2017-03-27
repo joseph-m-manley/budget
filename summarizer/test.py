@@ -14,8 +14,8 @@ class HelpersTest(unittest.TestCase):
             self.assertEqual(expected[key], actual[key])
 
     def test_get_transaction_amount(self):
-        withdrawal = {'Withdrawals': '45.0', 'Deposits': ''}
-        deposit = {'Withdrawals': '', 'Deposits': '30.0'}
+        withdrawal = {'Withdrawals': '$45.0', 'Deposits': ''}
+        deposit = {'Withdrawals': '', 'Deposits': '$30.0'}
         error_case = {'Withdrawals': '', 'Deposits': ''}
 
         self.assertAlmostEqual(
@@ -34,17 +34,17 @@ class SummarizerTest(unittest.TestCase):
             'bill': ['electric', 'water'],
             'income': ['paycheck']
             }
-        self.expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 100.0}
+        self.expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 1000.0}
 
     def test_summarize_should_summarize(self):
         activity = [
-            {'Description': 'kroger #450', 'Withdrawals': '10.0', 'Deposits': ''},
-            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '100.0'},
-            {'Description': 'jimmy johns - downtown', 'Withdrawals': '5.0', 'Deposits': ''},
+            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': ''},
+            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '$1,000.0'},
+            {'Description': 'jimmy johns - downtown', 'Withdrawals': '$5.0', 'Deposits': ''},
             {'Description': 'electric company', 'Withdrawals': '25.25', 'Deposits': ''},
-            {'Description': 'marathon', 'Withdrawals': '15.5', 'Deposits': '30.0'},
-            {'Description': 'water utility co', 'Withdrawals': '25.0', 'Deposits': ''},
-            {'Description': 'local grocery store', 'Withdrawals': '10.0', 'Deposits': ''},
+            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0'},
+            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': ''},
+            {'Description': 'local grocery store', 'Withdrawals': '$10.0', 'Deposits': ''},
         ]
 
         actual = summarizer.summarize(self.categories, activity)

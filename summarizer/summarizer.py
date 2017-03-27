@@ -1,4 +1,22 @@
 #!/usr/bin/env python3
+import json
+from csv import DictReader
+
+
+def get_json(path):
+    with open(path) as file:
+        return json.load(file)
+
+
+def save_json(j, path):
+    with open(path, 'w+') as file:
+        json.dump(j, file, indent=4)
+
+
+def get_table(path):
+    with open(path) as csv:
+        table = DictReader(csv)
+        return list(table)
 
 
 def invert_dict(d):
@@ -7,9 +25,9 @@ def invert_dict(d):
 
 def get_transaction_amount(t):
     if t['Withdrawals']:
-        return float(t['Withdrawals'])
+        return float(t['Withdrawals'].replace('$', '').replace(',', ''))
     elif t['Deposits']:
-        return float(t['Deposits'])
+        return float(t['Deposits'].replace('$', '').replace(',', ''))
     else:
         return 0.0
 
@@ -28,12 +46,13 @@ def summarize(categories, activity):
 
 
 def main():
-    pass
-    # config = get_config()
-    # categories = get_categories(config['categories'])
-    # activity = get_jsn(config['csvfilepath'])
+    config = get_json('../categorizer/config.json')
 
-    # summarize(categories, activity)
+    categories = get_json(config['categories'])
+    activity = get_table(config['csvfilepath'])
+
+    expenses = summarize(categories, activity)
+    save_json(expenses, '../user/expenses.json')
 
 
 if __name__ == '__main__':
