@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from csv import DictReader
+from datetime import datetime
 
 
 def get_json(path):
@@ -32,13 +33,17 @@ def get_transaction_amount(t):
         return 0.0
 
 
+def is_relevant(t, description):
+    return description in t['Description'] and datetime.now().month == int(t['Date'][0:2])
+
+
 def summarize(categories, activity):
     expenses = dict.fromkeys(categories.keys(), 0.0)
     descriptions = invert_dict(categories)
 
     for transaction in activity:
         for description in descriptions:
-            if description in transaction['Description']:
+            if is_relevant(transaction, description):
                 category = descriptions[description]
                 expenses[category] += get_transaction_amount(transaction)
 
