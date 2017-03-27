@@ -1,71 +1,72 @@
 #!/usr/bin/env python3
 
 from iohelpers import *
-from reghelpers import *
+from listhelpers import *
 
 
-def get_input(msg, opt=['Y', 'N', 'Q']):
-    x = None
-    message = '{} {} or {}: '.format(msg, ', '.join(opt[:-1]), opt[-1])
-    choices = opt + ['']
-    while x not in choices:
-        x = input(message).upper()
-    return x
+def dict_of_sets(d):
+    return {k: set(v) for k, v in d.items()}
 
 
-def ask_for_key(word):
-    if len(word) < 20:
-        return word
-    x = get_input('Would you like to assign a key? ')
-    if x != 'Y':
-        return word
+def dict_of_lists(d):
+    return {k: list(v) for k, v in d.items()}
+
+
+def add_category(category, value_to_add, categories):
+    if category in categories:
+        categories[category].add(value_to_add)
     else:
-        return input('Key: ').upper()
+        categories[category] = {value_to_add}
 
 
-def categorize(words, categories=dict()):
-    working = {k: set(v) for k, v in categories.items()}
-    shown = []
-
-    for word in words:
-        if word not in shown:
-            shown.append(word)
-
-            print('\n%s' % word)
-
-            key = ask_for_key(word)
-
-            x = input('What category does this belong in? ').upper()
-            if x == 'Q':
-                break
-            elif x in working:
-                working[x].add(key)
-            else:
-                working[x] = {key}
-
-    return {k: list(v) for k, v in working.items()}
+def ask_for_key(phrase):
+    print('\n%s' % phrase)
+    key = phrase
+    if len(key) > 15:
+        x = input('Assign a key? ').upper()
+        if x not in ('Y', 'Q', 'N', ''):
+            key = x
+        elif x == 'Y':
+            key = input('Key: ').upper()
+    return key
 
 
-def flatten(list_of_lists):
-    return [item for _list in list_of_lists for item in _list]
+def merge_categories(phrases, categories):
+    merged = dict_of_sets(categories)
+    known_words = set(flatten(merged.values()))
+    unknown_phrases = filter_duplicates(phrases, known_words)
+
+    for phrase in unknown_phrases:
+        if not contains_any(phrase, known_words):
+            key = ask_for_key(phrase)
+            known_words.add(key)
+
+            category = input('What category does this belong in? ').upper()
+            if category == 'Q':
+                break  # quit
+            elif category == '':
+                continue  # skip this item
+
+            add_category(category, key, merged)
+
+    return dict_of_lists(merged)
 
 
-def preprocess(words, noise, duplicates):
-    normalized_words = filter_noise(words, set(noise))
-    return filter_duplicates(normalized_words, set(duplicates))
+def categorize(config):
+    noise = get_noise(config['noise'])
+    existing_categories = get_json(config['categories'])
+
+    raw_phrases = get_column(config['csvfilepath'], config['column'])
+    normalized_phrases = filter_noise(raw_phrases, noise)
+
+    return merge_categories(normalized_phrases, existing_categories)
 
 
 def main():
     config = get_config()
-    noise = get_noise(config['noise'])
-    categories = get_json(config['categories'])
-    raw_words = get_column(config['csvfilepath'], config['column'])
+    categorized = categorize(config)
 
-    known_words = flatten(categories.values())
-    new_words = preprocess(raw_words, noise, known_words)
-    categorized = categorize(new_words, categories)
-
-    if get_input('Do you want to save?') == 'Y':
+    if input('Do you want to save? Y or N: ').upper() == 'Y':
         save_jsn(categorized, config['categories'])
 
 
