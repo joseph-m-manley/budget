@@ -1,5 +1,5 @@
 import categorizer
-import listhelpers
+import helpers.collectionUtilities as util
 import unittest
 
 
@@ -9,7 +9,7 @@ class HelpersTest(unittest.TestCase):
         noise = ["foo", "#\\d+", "X+\\d{4}"]
 
         expected = {'hello', 'world', 'its', 'me'}
-        actual = categorizer.filter_noise(words, noise)
+        actual = util.filter_noise_from_words(words, noise)
 
         self.assertEqual(expected, actual)
 
@@ -17,7 +17,7 @@ class HelpersTest(unittest.TestCase):
         nested_list = [[1, 2], [3, 4, 5], [6], [], [7, 8, 9]]
 
         expected = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        actual = categorizer.flatten(nested_list)
+        actual = util.flatten(nested_list)
 
         self.assertEqual(expected, actual)
 
@@ -26,7 +26,7 @@ class HelpersTest(unittest.TestCase):
         dupes = ['hello', 'world']
 
         expected = {'its', 'me'}
-        actual = listhelpers.filter_duplicates(words, dupes)
+        actual = util.filter_duplicates(words, dupes)
 
         self.assertEqual(expected, actual)
 
@@ -35,7 +35,7 @@ class HelpersTest(unittest.TestCase):
         dupes = []
 
         expected = {'hello', 'world', 'its', 'me'}
-        actual = listhelpers.filter_duplicates(words, dupes)
+        actual = util.filter_duplicates(words, dupes)
 
         self.assertEqual(expected, actual)
 
@@ -43,13 +43,13 @@ class HelpersTest(unittest.TestCase):
         word = 'hello world its me'
         possible_duplicates = ['its', 'a', 'beautiful', 'world']
 
-        self.assertTrue(listhelpers.contains_any(word, possible_duplicates))
+        self.assertTrue(util.contains_any(word, possible_duplicates))
 
     def test_contains_any_should_ignore_empty_set(self):
         phrase = 'hello world'
         words_to_match = []
 
-        self.assertFalse(listhelpers.contains_any(phrase, words_to_match))
+        self.assertFalse(util.contains_any(phrase, words_to_match))
 
 
 class AssignKeyTest(unittest.TestCase):
@@ -81,7 +81,7 @@ class AssignKeyTest(unittest.TestCase):
         for key in expected:
             self.assertEqual(sorted(expected[key]), sorted(actual[key]))
 
-    # @unittest.skip('requires user input')
+    @unittest.skip('requires user input')
     def test_categorize_should_not_ask_if_entry_matches_existing_key(self):
         newKeys = {
             'bing bang boom hello',

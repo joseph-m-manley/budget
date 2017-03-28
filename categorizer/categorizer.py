@@ -49,7 +49,7 @@ def categorize(config):
     existing_categories = iohelpers.get_json(config['categories'])
 
     raw_phrases = iohelpers.get_column(config['csvfilepath'], config['column'])
-    normalized_phrases = util.filter_noise(raw_phrases, noise)
+    normalized_phrases = util.filter_noise_from_words(raw_phrases, noise)
 
     return merge_categories(normalized_phrases, existing_categories)
 
