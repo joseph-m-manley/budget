@@ -10,9 +10,9 @@ def add_category(category, value_to_add, categories):
         categories[category] = {value_to_add}
 
 
-def ask_for_key(phrase):
-    print('\n%s' % phrase)
-    key = phrase
+def ask_for_key(words):
+    print('\n%s' % words)
+    key = words
     if len(key) > 15:
         x = input('Assign a key? ').upper()
         if x not in ('Y', 'Q', 'N', ''):
@@ -22,15 +22,15 @@ def ask_for_key(phrase):
     return key
 
 
-def merge_categories(phrases, categories):
+def merge_categories(descriptions, categories):
+    known_descriptions = set(util.flatten(categories.values()))
     merged = util.dict_of_sets(categories)
-    known_words = set(util.flatten(merged.values()))
-    unknown_phrases = util.filter_duplicates(phrases, known_words)
+    unknown_descriptions = util.filter_duplicates(descriptions, known_descriptions)
 
-    for phrase in unknown_phrases:
-        if not util.contains_any(phrase, known_words):
-            key = ask_for_key(phrase)
-            known_words.add(key)
+    for unknown_descr in unknown_descriptions:
+        if not util.contains_any(unknown_descr, known_descriptions):
+            key = ask_for_key(unknown_descr)
+            known_descriptions.add(key)
 
             category = input('What category does this belong in? ').upper()
             if category == 'Q':
@@ -47,10 +47,10 @@ def categorize(config):
     noise = util.get_noise(config['noise'])
     existing_categories = util.get_json(config['categories'])
 
-    raw_phrases = util.get_column(config['csvfilepath'], config['column'])
-    normalized_phrases = util.filter_noise_from_words(raw_phrases, noise)
+    raw_descriptions = util.get_column(config['csvfilepath'], config['column'])
+    normalized_descriptions = util.filter_noise(raw_descriptions, noise)
 
-    return merge_categories(normalized_phrases, existing_categories)
+    return merge_categories(normalized_descriptions, existing_categories)
 
 
 def main():

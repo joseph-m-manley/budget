@@ -26,7 +26,7 @@ def join_patterns(patterns):
     return re.compile(matcher, re.IGNORECASE)
 
 
-def filter_noise_from_words(words, noise):
+def filter_noise(words, noise):
     rgx = join_patterns(noise)
     return set(rgx.sub('', word).strip() for word in words)
 

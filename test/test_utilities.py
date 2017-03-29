@@ -18,7 +18,7 @@ class HelpersTest(unittest.TestCase):
         noise = ["foo", "#\\d+", "X+\\d{4}"]
 
         expected = {'hello', 'world', 'its', 'me'}
-        actual = util.filter_noise_from_words(words, noise)
+        actual = util.filter_noise(words, noise)
 
         self.assertEqual(expected, actual)
 

@@ -3,7 +3,7 @@ import budget.categorizer as categorizer
 
 
 class AssignKeyTest(unittest.TestCase):
-    @unittest.skip('requires user input')
+    # @unittest.skip('requires user input')
     def test_categorize_to_existing_keymap(self):
         newKeys = {
             'hello', 'honey', 'honey',
@@ -31,7 +31,7 @@ class AssignKeyTest(unittest.TestCase):
         for key in expected:
             self.assertEqual(sorted(expected[key]), sorted(actual[key]))
 
-    @unittest.skip('requires user input')
+    # @unittest.skip('requires user input')
     def test_categorize_should_not_ask_if_entry_matches_existing_key(self):
         newKeys = {
             'bing bang boom hello',
