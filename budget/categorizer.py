@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import helpers.iohelpers as iohelpers
-import helpers.collectionUtilities as util
+import budget.utilities as util
 
 
 def add_category(category, value_to_add, categories):
@@ -45,17 +44,17 @@ def merge_categories(phrases, categories):
 
 
 def categorize(config):
-    noise = iohelpers.get_noise(config['noise'])
-    existing_categories = iohelpers.get_json(config['categories'])
+    noise = util.get_noise(config['noise'])
+    existing_categories = util.get_json(config['categories'])
 
-    raw_phrases = iohelpers.get_column(config['csvfilepath'], config['column'])
+    raw_phrases = util.get_column(config['csvfilepath'], config['column'])
     normalized_phrases = util.filter_noise_from_words(raw_phrases, noise)
 
     return merge_categories(normalized_phrases, existing_categories)
 
 
 def main():
-    config = iohelpers.get_config()
+    config = util.get_config()
     categorized = categorize(config)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':

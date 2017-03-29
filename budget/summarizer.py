@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+
 from datetime import datetime
-import helpers.iohelpers as iohelpers
-from helpers.collectionUtilities import invert_dict
+import budget.utilities as util
 
 
 def get_transaction_amount(t):
@@ -19,7 +19,7 @@ def is_relevant(t, description):
 
 def summarize(categories, activity):
     expenses = dict.fromkeys(categories.keys(), 0.0)
-    descriptions = invert_dict(categories)
+    descriptions = util.invert_dict(categories)
 
     for transaction in activity:
         for description in descriptions:
@@ -32,14 +32,14 @@ def summarize(categories, activity):
 
 
 def main():
-    config = iohelpers.get_config()
+    config = util.get_config()
 
-    categories = iohelpers.get_json(config['categories'])
-    activity = iohelpers.get_table(config['csvfilepath'])
+    categories = util.get_json(config['categories'])
+    activity = util.get_table(config['csvfilepath'])
 
     expenses = summarize(categories, activity)
 
-    iohelpers.save_json(expenses, config['expenses'])
+    util.save_json(expenses, config['expenses'])
 
 
 if __name__ == '__main__':

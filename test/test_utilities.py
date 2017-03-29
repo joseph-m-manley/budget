@@ -1,9 +1,18 @@
-import categorizer
-import helpers.collectionUtilities as util
+import budget.utilities as util
 import unittest
 
 
 class HelpersTest(unittest.TestCase):
+    def test_invert_dict(self):
+        dict_to_invert = {1: [1, 2, 3], 2: [4, 5, 6], 3: [7, 8, 9]}
+        expected = {1: 1, 2: 1, 3: 1, 4: 2, 5: 2, 6: 2, 7: 3, 8: 3, 9: 3}
+
+        actual = util.invert_dict(dict_to_invert)
+
+        self.assertEqual(list(expected.keys()), list(actual.keys()))
+        for key in expected:
+            self.assertEqual(expected[key], actual[key])
+
     def test_filter_noise(self):
         words = ['hello xxxx1234', 'foo world', 'its#9999', '    me   ']
         noise = ["foo", "#\\d+", "X+\\d{4}"]
@@ -50,56 +59,6 @@ class HelpersTest(unittest.TestCase):
         words_to_match = []
 
         self.assertFalse(util.contains_any(phrase, words_to_match))
-
-
-class AssignKeyTest(unittest.TestCase):
-    @unittest.skip('requires user input')
-    def test_categorize_to_existing_keymap(self):
-        newKeys = {
-            'hello', 'honey', 'honey',
-            'its', 'me',
-            'your', 'your', 'husband',
-            'ralph', 'ralph'
-            }
-
-        existing = {
-            '1': ['hello'],
-            '2': ['its'],
-            '3': ['husband']
-            }
-
-        expected = {
-            '1': ['hello', 'honey'],
-            '2': ['its', 'me'],
-            '3': ['your', 'husband'],
-            '4': ['ralph']
-            }
-
-        print("honey: 1,  me: 2,  your: 3,  ralph: 4")
-        actual = categorizer.merge_categories(newKeys, existing)
-
-        for key in expected:
-            self.assertEqual(sorted(expected[key]), sorted(actual[key]))
-
-    @unittest.skip('requires user input')
-    def test_categorize_should_not_ask_if_entry_matches_existing_key(self):
-        newKeys = {
-            'bing bang boom hello',
-            'frazzle hello dazzle',
-            'world is so very big',
-            'oh what a wonderful world'
-            }
-
-        existing = dict()
-        expected = {'1': ['HELLO'], '2': ['WORLD']}
-
-        print('hello: 1,  world: 2')
-        actual = categorizer.merge_categories(newKeys, existing)
-
-        self.assertEqual(list(expected.keys()), list(actual.keys()))
-        for key in expected:
-            self.assertEqual(sorted(expected[key]), sorted(actual[key]))
-
 
 if __name__ == '__main__':
     unittest.main()

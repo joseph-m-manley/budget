@@ -1,6 +1,7 @@
 # User files
 /user
 .vscode/
+setup.cfg
 *~
 
 # Byte-compiled / optimized / DLL files

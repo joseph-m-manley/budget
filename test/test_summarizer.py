@@ -1,18 +1,8 @@
 import unittest
-import summarizer
+import budget.summarizer as summarizer
 
 
 class HelpersTest(unittest.TestCase):
-    def test_invert_dict(self):
-        dict_to_invert = {1: [1, 2, 3], 2: [4, 5, 6], 3: [7, 8, 9]}
-        expected = {1: 1, 2: 1, 3: 1, 4: 2, 5: 2, 6: 2, 7: 3, 8: 3, 9: 3}
-
-        actual = summarizer.invert_dict(dict_to_invert)
-
-        self.assertEqual(list(expected.keys()), list(actual.keys()))
-        for key in expected:
-            self.assertEqual(expected[key], actual[key])
-
     def test_get_transaction_amount(self):
         withdrawal = {'Withdrawals': '$45.0', 'Deposits': ''}
         deposit = {'Withdrawals': '', 'Deposits': '$30.0'}
@@ -27,7 +17,7 @@ class HelpersTest(unittest.TestCase):
 
 
 class SummarizerTest(unittest.TestCase):
-    def assertSummariesEqual(expected, actual):
+    def assertSummariesEqual(self, expected, actual):
         self.assertEqual(len(expected.keys()), len(actual.keys()))
         for k in expected:
             self.assertAlmostEqual(expected[k], actual[k])
@@ -55,7 +45,7 @@ class SummarizerTest(unittest.TestCase):
         expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 1000.0}
         actual = summarizer.summarize(self.categories, activity)
 
-        self.assertSummariesEqual(expected, actuals)
+        self.assertSummariesEqual(expected, actual)
 
     def test_summarizer_should_ignore_uknown_activity(self):
         month = '03'
