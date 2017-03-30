@@ -1,7 +1,6 @@
 {
-    "column": "Description",
-    "csvfilepath": "user/depositAcctivityExport.csv",
+    "activity": "user/depositAcctivityExport.csv",
     "categories": "user/categories.json",
     "noise": "user/noise.json",
-    "expenses": "user/expenses.json"
+    "budget": "user/budget.json"
 }

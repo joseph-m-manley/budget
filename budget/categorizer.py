@@ -3,7 +3,7 @@
 import budget.utilities as util
 
 
-def add_category(category, value_to_add, categories):
+def add_category(categories, category, value_to_add):
     if category in categories:
         categories[category].add(value_to_add)
     else:
@@ -22,9 +22,21 @@ def ask_for_key(words):
     return key
 
 
+def to_dict_of_sets(d):
+    return {k: set(v) for k, v in d.items()}
+
+
+def to_dict_of_lists(d):
+    return {k: list(v) for k, v in d.items()}
+
+
+def flatten(list_of_lists):
+    return [item for _list in list_of_lists for item in _list]
+
+
 def merge_categories(descriptions, categories):
-    known_descriptions = set(util.flatten(categories.values()))
-    merged = util.dict_of_sets(categories)
+    known_descriptions = set(flatten(categories.values()))
+    merged = to_dict_of_sets(categories)
     unknown_descriptions = util.filter_duplicates(descriptions, known_descriptions)
 
     for unknown_descr in unknown_descriptions:
@@ -38,16 +50,16 @@ def merge_categories(descriptions, categories):
             elif category == '':
                 continue  # skip this item
 
-            add_category(category, key, merged)
+            add_category(merged, category, key)
 
-    return util.dict_of_lists(merged)
+    return to_dict_of_lists(merged)
 
 
 def categorize(config):
     noise = util.get_noise(config['noise'])
     existing_categories = util.get_json(config['categories'])
 
-    raw_descriptions = util.get_column(config['csvfilepath'], config['column'])
+    raw_descriptions = util.get_descriptions(config['activity'])
     normalized_descriptions = util.filter_noise(raw_descriptions, noise)
 
     return merge_categories(normalized_descriptions, existing_categories)
@@ -58,7 +70,7 @@ def main():
     categorized = categorize(config)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':
-        save_jsn(categorized, config['categories'])
+        save_json(categorized, config['categories'])
 
 
 if __name__ == '__main__':

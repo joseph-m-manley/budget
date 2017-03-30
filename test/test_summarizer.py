@@ -1,9 +1,10 @@
 import unittest
+from unittest import TestCase as Test
 import budget.summarizer as summarizer
 
 
-class HelpersTest(unittest.TestCase):
-    def test_get_transaction_amount(self):
+class TestGetTransactionAmount(Test):
+    def test_returns_value_of_withdrawal_or_deposit(self):
         withdrawal = {'Withdrawals': '$45.0', 'Deposits': ''}
         deposit = {'Withdrawals': '', 'Deposits': '$30.0'}
         error_case = {'Withdrawals': '', 'Deposits': ''}
@@ -16,7 +17,38 @@ class HelpersTest(unittest.TestCase):
             0.0, summarizer.get_transaction_amount(error_case))
 
 
-class SummarizerTest(unittest.TestCase):
+class TestInvertDict(Test):
+    def test_invert_dict(self):
+        dict_to_invert = {1: [1, 2, 3], 2: [4, 5, 6], 3: [7, 8, 9]}
+        expected = {1: 1, 2: 1, 3: 1, 4: 2, 5: 2, 6: 2, 7: 3, 8: 3, 9: 3}
+
+        actual = summarizer.invert_dict(dict_to_invert)
+
+        self.assertEqual(list(expected.keys()), list(actual.keys()))
+        for key in expected:
+            self.assertEqual(expected[key], actual[key])
+
+
+class TestIsRelevant(Test):
+    def test_returns_true_if_given_matching_description(self):
+        transaction = {'Description': 'hello darkness my old friend', 'Date': '03'}
+        description = 'darkness'
+        non_matching_descr = 'sandwich'
+
+        self.assertTrue(summarizer.is_relevant(transaction, description, 3))
+        self.assertFalse(summarizer.is_relevant(transaction, non_matching_descr, 3))
+
+    def test_returns_true_if_date_is_in_range(self):
+        month = '03'
+        wrong_month = '06'
+        transaction = {'Description': 'hello', 'Date': month}
+        description = 'hello'
+
+        self.assertTrue(summarizer.is_relevant(transaction, description, int(month)))
+        self.assertFalse(summarizer.is_relevant(transaction, description, int(wrong_month)))
+
+
+class SummarizerTest(Test):
     def assertSummariesEqual(self, expected, actual):
         self.assertEqual(len(expected.keys()), len(actual.keys()))
         for k in expected:
@@ -30,14 +62,14 @@ class SummarizerTest(unittest.TestCase):
             'income': ['paycheck']
             }
 
-    def test_summarize_should_summarize(self):
+    def test_summarize_ignores_noise(self):
         month = '03'
         activity = [
             {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
             {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': month},
             {'Description': 'jimmy johns - downtown', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': month},
             {'Description': 'electric company', 'Withdrawals': '25.25', 'Deposits': '', 'Date': month},
-            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': month},
+            {'Description': 'marathon gas station', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': month},
             {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': month},
             {'Description': 'local grocery store', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
         ]
@@ -47,7 +79,7 @@ class SummarizerTest(unittest.TestCase):
 
         self.assertSummariesEqual(expected, actual)
 
-    def test_summarizer_should_ignore_uknown_activity(self):
+    def test_summarizer_ignores_uknown_activity(self):
         month = '03'
         activity = [
             {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
@@ -58,6 +90,23 @@ class SummarizerTest(unittest.TestCase):
         ]
 
         expected = {'food': 10.0, 'gas': 15.5, 'bill': 25.0, 'income': 0.0}
+        actual = summarizer.summarize(self.categories, activity)
+
+        self.assertSummariesEqual(expected, actual)
+
+    def test_summarizer_ignores_entries_from_out_of_range_months(self):
+        month = '03'
+        previous_months = ('02', '01')
+        activity = [
+            {'Description': 'kroger', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
+            {'Description': 'paycheck', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': month},
+            {'Description': 'jimmy johns', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': previous_months[0]},
+            {'Description': 'electric', 'Withdrawals': '25.25', 'Deposits': '', 'Date': previous_months[0]},
+            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': previous_months[1]},
+            {'Description': 'water', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': previous_months[1]}
+        ]
+
+        expected = {'food': 10.0, 'gas': 0.0, 'bill': 0.0, 'income': 1000.0}
         actual = summarizer.summarize(self.categories, activity)
 
         self.assertSummariesEqual(expected, actual)

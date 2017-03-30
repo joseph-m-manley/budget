@@ -1,10 +1,34 @@
 import unittest
+from unittest import TestCase as Test
 import budget.categorizer as categorizer
 
 
-class AssignKeyTest(unittest.TestCase):
-    # @unittest.skip('requires user input')
-    def test_categorize_to_existing_keymap(self):
+class TestFlatten(Test):
+    def runTest(self):
+        nested_list = [[1, 2], [3, 4, 5], [6], [], [7, 8, 9]]
+
+        expected = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        actual = categorizer.flatten(nested_list)
+
+        self.assertEqual(expected, actual)
+
+
+class TestAddCategory(Test):
+    def add_category_adds_to_set_or_creates_new_set(self):
+        expected = {1: {1, 2}, 2: {3}}
+        actual = {1: {1}}
+
+        categorizer.add_category(actual, 1, 2)
+        categorizer.add_category(actual, 2, 3)
+
+        self.assertEqual(len(expected.keys()), len(actual.keys()))
+        for k in expected:
+            self.assertEqual(expected[k], actual[k])
+
+
+class TestMergeCategories(Test):
+    @unittest.skip('requires user input')
+    def test_categorize_should_ignore_duplicates(self):
         newKeys = {
             'hello', 'honey', 'honey',
             'its', 'me',
@@ -31,7 +55,7 @@ class AssignKeyTest(unittest.TestCase):
         for key in expected:
             self.assertEqual(sorted(expected[key]), sorted(actual[key]))
 
-    # @unittest.skip('requires user input')
+    @unittest.skip('requires user input')
     def test_categorize_should_not_ask_if_entry_matches_existing_key(self):
         newKeys = {
             'bing bang boom hello',

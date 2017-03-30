@@ -5,24 +5,8 @@ import re
 from csv import DictReader
 
 
-def dict_of_sets(d):
-    return {k: set(v) for k, v in d.items()}
-
-
-def dict_of_lists(d):
-    return {k: list(v) for k, v in d.items()}
-
-
-def invert_dict(d):
-    return {value: key for key in d for value in d[key]}
-
-
-def flatten(list_of_lists):
-    return [item for _list in list_of_lists for item in _list]
-
-
 def join_patterns(patterns):
-    matcher = '(%s)' % ')|('.join(patterns)
+    matcher = '(%s)' % '|'.join(patterns)
     return re.compile(matcher, re.IGNORECASE)
 
 
@@ -31,10 +15,10 @@ def filter_noise(words, noise):
     return set(rgx.sub('', word).strip() for word in words)
 
 
-def contains_any(phrase, words_in_phrase):
-    if not words_in_phrase:
+def contains_any(phrase, subst_to_find):
+    if not subst_to_find:
         return False
-    rgx = join_patterns(words_in_phrase)
+    rgx = join_patterns(subst_to_find)
     return bool(rgx.search(phrase))
 
 
@@ -63,10 +47,10 @@ def get_noise(path):
     return get_json(path)['noise']
 
 
-def get_column(path, col):
+def get_descriptions(path):
     with open(path) as csv:
         table = DictReader(csv)
-        return set(row[col] for row in table)
+        return set(row['Description'] for row in table)
 
 
 def get_table(path):
