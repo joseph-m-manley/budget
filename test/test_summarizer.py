@@ -1,3 +1,4 @@
+import datetime
 import unittest
 from unittest import TestCase as Test
 import budget.summarizer as summarizer
@@ -62,16 +63,20 @@ class SummarizerTest(Test):
             'income': ['paycheck']
             }
 
+        _month = str(datetime.datetime.now().month)
+        if len(_month) == 1:
+            _month = ''.join(['0', _month])
+        self.month = _month
+
     def test_summarize_ignores_noise(self):
-        month = '03'
         activity = [
-            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
-            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': month},
-            {'Description': 'jimmy johns - downtown', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': month},
-            {'Description': 'electric company', 'Withdrawals': '25.25', 'Deposits': '', 'Date': month},
-            {'Description': 'marathon gas station', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': month},
-            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': month},
-            {'Description': 'local grocery store', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
+            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': self.month},
+            {'Description': 'jimmy johns - downtown', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'electric company', 'Withdrawals': '25.25', 'Deposits': '', 'Date': self.month},
+            {'Description': 'marathon gas station', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': self.month},
+            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'local grocery store', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
         ]
 
         expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 1000.0}
@@ -80,13 +85,12 @@ class SummarizerTest(Test):
         self.assertSummariesEqual(expected, actual)
 
     def test_summarizer_ignores_uknown_activity(self):
-        month = '03'
         activity = [
-            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
-            {'Description': 'who knows', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': month},
-            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': month},
-            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': month},
-            {'Description': 'something', 'Withdrawals': '25.25', 'Deposits': '', 'Date': month},
+            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'who knows', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': self.month},
+            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'something', 'Withdrawals': '25.25', 'Deposits': '', 'Date': self.month},
         ]
 
         expected = {'food': 10.0, 'gas': 15.5, 'bill': 25.0, 'income': 0.0}
@@ -95,11 +99,10 @@ class SummarizerTest(Test):
         self.assertSummariesEqual(expected, actual)
 
     def test_summarizer_ignores_entries_from_out_of_range_months(self):
-        month = '03'
         previous_months = ('02', '01')
         activity = [
-            {'Description': 'kroger', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': month},
-            {'Description': 'paycheck', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': month},
+            {'Description': 'kroger', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'paycheck', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': self.month},
             {'Description': 'jimmy johns', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': previous_months[0]},
             {'Description': 'electric', 'Withdrawals': '25.25', 'Deposits': '', 'Date': previous_months[0]},
             {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': previous_months[1]},

@@ -70,7 +70,7 @@ def main():
     categorized = categorize(config)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':
-        save_json(categorized, config['categories'])
+        util.save_json(categorized, config['categories'])
 
 
 if __name__ == '__main__':
