@@ -43,8 +43,19 @@ def get_config():
     return get_json('config.json')
 
 
+def try_get_json(path, key):
+    try:
+        return get_json(path)[key]
+    except:
+        return dict()
+
+
 def get_noise(path):
-    return get_json(path)['noise']
+    return try_get_json(path, 'noise')
+
+
+def get_budget(path):
+    return try_get_json(path, 'budget')
 
 
 def get_descriptions(path):

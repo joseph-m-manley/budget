@@ -57,11 +57,10 @@ def merge_categories(descriptions, categories):
 
 def categorize(config):
     noise = util.get_noise(config['noise'])
-    existing_categories = util.get_json(config['categories'])
-
     raw_descriptions = util.get_descriptions(config['activity'])
     normalized_descriptions = util.filter_noise(raw_descriptions, noise)
 
+    existing_categories = util.get_json(config['categories'])
     return merge_categories(normalized_descriptions, existing_categories)
 
 

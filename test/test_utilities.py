@@ -13,6 +13,24 @@ class TestFilters(Test):
 
         self.assertEqual(expected, actual)
 
+    def test_filter_noise_always_strips_whitespace(self):
+        words = [' 1hello1 ', ' 2world2 ', ' 3its3 ', ' 4me4 ']
+        noise = ["\\d+"]
+
+        expected = {'hello', 'world', 'its', 'me'}
+        actual = util.filter_noise(words, noise)
+
+        self.assertEqual(expected, actual)
+
+    def test_filter_noise_returns_original_if_noise_is_empty(self):
+        words = ['hello xxxx1234', 'foo world', 'its#9999', '    me   ']
+        noise = []
+
+        expected = {'hello xxxx1234', 'foo world', 'its#9999', 'me'}
+        actual = util.filter_noise(words, noise)
+
+        self.assertEqual(expected, actual)
+
     def test_filter_duplicates_should_remove_duplicates(self):
         words = ['hello', 'world', 'its', 'me']
         dupes = ['hello', 'world']
@@ -50,6 +68,13 @@ class TestContainsAny(Test):
         words_to_match = []
 
         self.assertFalse(util.contains_any(phrase, words_to_match))
+
+
+class TestFileHelpers(Test):
+    def test_try_get_json_with_bad_path_returns_empty_dict(self):
+        noise = util.try_get_json("a path that obviously does not exist", 'arbitrary key')
+        self.assertDictEqual(noise, dict())
+
 
 if __name__ == '__main__':
     unittest.main()
