@@ -32,24 +32,15 @@ class TestInvertDict(Test):
 
 class TestIsRelevant(Test):
     def test_returns_true_if_given_matching_description(self):
-        transaction = {'Description': 'hello darkness my old friend', 'Date': '03'}
+        transaction = {'Description': 'hello darkness my old friend'}
         description = 'darkness'
         non_matching_descr = 'sandwich'
 
-        self.assertTrue(summarizer.is_relevant(transaction, description, 3))
-        self.assertFalse(summarizer.is_relevant(transaction, non_matching_descr, 3))
-
-    def test_returns_true_if_date_is_in_range(self):
-        month = '03'
-        wrong_month = '06'
-        transaction = {'Description': 'hello', 'Date': month}
-        description = 'hello'
-
-        self.assertTrue(summarizer.is_relevant(transaction, description, int(month)))
-        self.assertFalse(summarizer.is_relevant(transaction, description, int(wrong_month)))
+        self.assertTrue(summarizer.is_relevant(transaction, description))
+        self.assertFalse(summarizer.is_relevant(transaction, non_matching_descr))
 
 
-class SummarizerTest(Test):
+class TestSummarizer(Test):
     def assertSummariesEqual(self, expected, actual):
         self.assertEqual(len(expected.keys()), len(actual.keys()))
         for k in expected:
@@ -63,20 +54,15 @@ class SummarizerTest(Test):
             'income': ['paycheck']
             }
 
-        _month = str(datetime.datetime.now().month)
-        if len(_month) == 1:
-            _month = ''.join(['0', _month])
-        self.month = _month
-
     def test_summarize_ignores_noise(self):
         activity = [
-            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
-            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': self.month},
-            {'Description': 'jimmy johns - downtown', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': self.month},
-            {'Description': 'electric company', 'Withdrawals': '25.25', 'Deposits': '', 'Date': self.month},
-            {'Description': 'marathon gas station', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': self.month},
-            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': self.month},
-            {'Description': 'local grocery store', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
+            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': ''},
+            {'Description': 'paycheck from work', 'Withdrawals': '', 'Deposits': '$1,000.0'},
+            {'Description': 'jimmy johns - downtown', 'Withdrawals': '$5.0', 'Deposits': ''},
+            {'Description': 'electric company', 'Withdrawals': '25.25', 'Deposits': ''},
+            {'Description': 'marathon gas station', 'Withdrawals': '$15.5', 'Deposits': '$30.0'},
+            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': ''},
+            {'Description': 'local grocery store', 'Withdrawals': '$10.0', 'Deposits': ''},
         ]
 
         expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 1000.0}
@@ -86,11 +72,11 @@ class SummarizerTest(Test):
 
     def test_summarizer_ignores_uknown_activity(self):
         activity = [
-            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
-            {'Description': 'who knows', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': self.month},
-            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': self.month},
-            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': self.month},
-            {'Description': 'something', 'Withdrawals': '25.25', 'Deposits': '', 'Date': self.month},
+            {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': ''},
+            {'Description': 'who knows', 'Withdrawals': '$5.0', 'Deposits': ''},
+            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0'},
+            {'Description': 'water utility co', 'Withdrawals': '$25.0', 'Deposits': ''},
+            {'Description': 'something', 'Withdrawals': '25.25', 'Deposits': ''},
         ]
 
         expected = {'food': 10.0, 'gas': 15.5, 'bill': 25.0, 'income': 0.0}
@@ -98,21 +84,27 @@ class SummarizerTest(Test):
 
         self.assertSummariesEqual(expected, actual)
 
-    def test_summarizer_ignores_entries_from_out_of_range_months(self):
-        previous_months = ('02', '01')
-        activity = [
-            {'Description': 'kroger', 'Withdrawals': '$10.0', 'Deposits': '', 'Date': self.month},
-            {'Description': 'paycheck', 'Withdrawals': '', 'Deposits': '$1,000.0', 'Date': self.month},
-            {'Description': 'jimmy johns', 'Withdrawals': '$5.0', 'Deposits': '', 'Date': previous_months[0]},
-            {'Description': 'electric', 'Withdrawals': '25.25', 'Deposits': '', 'Date': previous_months[0]},
-            {'Description': 'marathon', 'Withdrawals': '$15.5', 'Deposits': '$30.0', 'Date': previous_months[1]},
-            {'Description': 'water', 'Withdrawals': '$25.0', 'Deposits': '', 'Date': previous_months[1]}
-        ]
 
-        expected = {'food': 10.0, 'gas': 0.0, 'bill': 0.0, 'income': 1000.0}
-        actual = summarizer.summarize(self.categories, activity)
+class TestSubtractExpenses(Test):
+    def test_correctly_subtracts_expenses(self):
+        budget = {'one': 50.5, 'two': 21.7, 'three': 34.7}
+        expenses = {'one': 23.5, 'two': 11.3, 'three': 1.0}
 
-        self.assertSummariesEqual(expected, actual)
+        expectedRemaining = {'one': 27.0, 'two': 10.4, 'three': 33.7}
+        actualRemaining = summarizer.subtract_expenses(budget, expenses)
+
+        self.assertDictEqual(expectedRemaining, actualRemaining)
+
+
+class TestCalculateTotals(Test):
+    def test_ignores_empty_budget(self):
+        expenses = {'one': 1, 'two': 2, 'three': 3}
+        budget = summarizer.calculate_totals(dict(), expenses)
+
+        expectedBudget = {'expenses': expenses}
+
+        self.assertDictEqual(budget, expectedBudget)
+
 
 if __name__ == '__main__':
     unittest.main()
