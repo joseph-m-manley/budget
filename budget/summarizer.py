@@ -9,10 +9,14 @@ def invert_dict(d):
 
 
 def get_transaction_amount(t):
-    if t['Withdrawals']:
+    if 'Withdrawals' in t and t['Withdrawals']:
         return float(t['Withdrawals'].replace('$', '').replace(',', ''))
-    elif t['Deposits']:
+    elif 'Deposits' in t and t['Deposits']:
         return float(t['Deposits'].replace('$', '').replace(',', ''))
+    elif 'Debit' in t and t['Debit']:
+        return float(t['Debit'].replace('$', '').replace(',', ''))
+    elif 'Credit' in t and t['Credit']:
+        return float(t['Credit'].replace('$', '').replace(',', ''))
     else:
         return 0.0
 
@@ -38,7 +42,7 @@ def summarize(categories, activity):
 def subtract_expenses(budget, expenses):
     remaining = dict.fromkeys(budget.keys(), 0.0)
     for category in budget:
-        difference = float(budget[category]) - float(expenses[category])
+        difference = float(budget.get(category)) - float(expenses.get(category, 0.0))
         remaining[category] = round(difference, 2)
 
     return remaining
