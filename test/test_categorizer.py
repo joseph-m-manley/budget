@@ -1,5 +1,6 @@
 import unittest
 from unittest import TestCase as Test
+from collections import OrderedDict
 import budget.categorizer as categorizer
 
 
@@ -26,6 +27,20 @@ class TestAddCategory(Test):
             self.assertEqual(expected[k], actual[k])
 
 
+class TestMakeMenu(Test):
+    def runTest(self):
+        d = {
+            'one': ['some descriptions'],
+            'two': ['some descriptions'],
+            'three': ['some descriptions']
+            }
+
+        expected = OrderedDict([(1, 'one'), (2, 'two'), (3, 'three')])
+        actual = categorizer.make_menu(d)
+
+        self.assertDictEqual(expected, actual)
+
+
 class TestMergeCategories(Test):
     @unittest.skip('requires user input')
     def test_categorize_should_ignore_duplicates(self):
@@ -37,19 +52,19 @@ class TestMergeCategories(Test):
             }
 
         existing = {
-            '1': ['hello'],
-            '2': ['its'],
-            '3': ['husband']
+            'a': ['hello'],
+            'b': ['its'],
+            'c': ['husband']
             }
 
         expected = {
-            '1': ['hello', 'honey'],
-            '2': ['its', 'me'],
-            '3': ['your', 'husband'],
-            '4': ['ralph']
+            'a': ['hello', 'honey'],
+            'b': ['its', 'me'],
+            'c': ['your', 'husband'],
+            'd': ['ralph']
             }
 
-        print("honey: 1,  me: 2,  your: 3,  ralph: 4")
+        print("honey: a,  me: b,  your: c,  ralph: d")
         actual = categorizer.merge_categories(newKeys, existing)
 
         for key in expected:
@@ -65,14 +80,13 @@ class TestMergeCategories(Test):
             }
 
         existing = dict()
-        expected = {'1': ['HELLO'], '2': ['WORLD']}
+        expected = {'a': ['HELLO'], 'b': ['WORLD']}
 
-        print('hello: 1,  world: 2')
+        for k, v in expected.items():
+            print('{0}: {1}'.format(k, v))
         actual = categorizer.merge_categories(newKeys, existing)
 
-        self.assertEqual(list(expected.keys()), list(actual.keys()))
-        for key in expected:
-            self.assertEqual(sorted(expected[key]), sorted(actual[key]))
+        self.assertDictEqual(expected, actual)
 
 
 if __name__ == '__main__':

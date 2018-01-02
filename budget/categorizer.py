@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import budget.utilities as util
+from collections import OrderedDict
 
 
 def add_category(categories, category, value_to_add):
@@ -34,20 +35,44 @@ def flatten(list_of_lists):
     return [item for _list in list_of_lists for item in _list]
 
 
-def merge_categories(descriptions, categories):
-    known_descriptions = set(flatten(categories.values()))
-    merged = to_dict_of_sets(categories)
-    unknown_descriptions = util.filter_duplicates(descriptions, known_descriptions)
+def flatten_to_set(list_of_lists):
+    return set(flatten(list_of_lists))
+
+
+def make_menu(categories_with_descriptions):
+    menu = OrderedDict()
+    i = 1
+    for category in categories_with_descriptions:
+        menu[i] = category
+        i += 1
+    return menu
+
+
+def merge_categories(descriptions_to_categorize, categories_with_descriptions):
+    '''
+    descriptions_to_categorize: set
+    categories_with_descriptions: dict of lists {food: [abc, xyz]} , comes from categories.json
+    returns: dict of lists {food: [abc, xyz, tuv]} , result of adding new descriptions to existing categories
+    '''
+    known_descriptions = flatten_to_set(categories_with_descriptions.values())
+    merged = to_dict_of_sets(categories_with_descriptions)
+    unknown_descriptions = util.filter_duplicates(descriptions_to_categorize, known_descriptions)
+    menu = make_menu(categories_with_descriptions)
 
     for unknown_descr in unknown_descriptions:
         if not util.contains_any(unknown_descr, known_descriptions):
             key = ask_for_key(unknown_descr)
             known_descriptions.add(key)
 
+            for m in menu:
+                print("{0}: {1}".format(m, menu[m]), end=', ')
             category = input('What category does this belong in? ').upper()
+
             if category == 'Q':
                 break  # quit
-            elif category == '':
+            elif category.isnumeric() and category in menu:
+                category = menu[category]
+            else:
                 continue  # skip this item
 
             add_category(merged, category, key)
@@ -57,7 +82,7 @@ def merge_categories(descriptions, categories):
 
 def categorize(config):
     noise = util.get_noise(config['noise'])
-    raw_descriptions = util.get_descriptions(config['activity'])
+    raw_descriptions = util.get_descriptions(config['activity'])  # 'description' column
     normalized_descriptions = util.filter_noise(raw_descriptions, noise)
 
     existing_categories = util.get_json(config['categories'])

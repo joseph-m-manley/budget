@@ -1,7 +1,19 @@
 TODO:
-- income vs expense logic (including dealing with transfers in and out of savings)
-- deal with ignoring line items (I may not want to categorize this thing... what does that mean when I summarize?)
-- support citi card & debit easily (make column names configurable? add an 'or' to the logic?)
 - add a menu to let user assign a category using existing categories with numbers as keys:
     What category does this belong in? (1) Food  (2) Home  (3) Fun
+
+- income vs expense logic (including dealing with transfers in and out of savings)
+
+- deal with ignoring line items (I may not want to categorize this thing... what does that mean when I summarize?)
+
+- support citi card & debit easily (make column names configurable? add an 'or' to the logic?)
+
 - get 'noise' working again
+
+- how to handle duplicate categories (Jockamo, jockamo's pizza) on summarize?
+- how to handle already categorized items 
+
+- change data layer to a "flat" injectable query object to make stubbing test data easier
+- make console a UI injectable for stubbing test data
+
+- handle budgets that don't match (if a category doesn't exist in the budget, just subtract zero)
