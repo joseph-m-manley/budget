@@ -39,15 +39,6 @@ def flatten_to_set(list_of_lists):
     return set(flatten(list_of_lists))
 
 
-def make_menu(categories_with_descriptions):
-    menu = OrderedDict()
-    i = 1
-    for category in categories_with_descriptions:
-        menu[i] = category
-        i += 1
-    return menu
-
-
 def merge_categories(descriptions_to_categorize, categories_with_descriptions):
     '''
     descriptions_to_categorize: set
@@ -57,22 +48,17 @@ def merge_categories(descriptions_to_categorize, categories_with_descriptions):
     known_descriptions = flatten_to_set(categories_with_descriptions.values())
     merged = to_dict_of_sets(categories_with_descriptions)
     unknown_descriptions = util.filter_duplicates(descriptions_to_categorize, known_descriptions)
-    menu = make_menu(categories_with_descriptions)
 
     for unknown_descr in unknown_descriptions:
         if not util.contains_any(unknown_descr, known_descriptions):
             key = ask_for_key(unknown_descr)
             known_descriptions.add(key)
 
-            for m in menu:
-                print("{0}: {1}".format(m, menu[m]), end=', ')
             category = input('What category does this belong in? ').upper()
 
             if category == 'Q':
                 break  # quit
-            elif category.isnumeric() and category in menu:
-                category = menu[category]
-            else:
+            elif category == '':
                 continue  # skip this item
 
             add_category(merged, category, key)
