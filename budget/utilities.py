@@ -6,27 +6,59 @@ from csv import DictReader
 
 
 def join_patterns(patterns):
+    '''
+    takes a list of regex patterns and makes:
+        '(one|two|three|four)'
+    returns a regex matcher for that pattern
+    '''
     matcher = '(%s)' % '|'.join(patterns)
     return re.compile(matcher, re.IGNORECASE)
 
 
-def filter_noise(words, noise):
+def filter_noise(strings, noise):
+    '''
+    takes a list of raw strings:
+        ['xxxhelloxxx', ...]
+    and regex patterns:
+        ['x{3}', ...]
+    creates a list of activities with the noise removed:
+        ['hello', ...]
+    returns it as a set
+    '''
     rgx = join_patterns(noise)
-    return set(rgx.sub('', word).strip() for word in words)
+    filtered = [rgx.sub('', _str).strip() for _str in strings]
+    return set(filtered)
 
 
-def contains_any(phrase, subst_to_find):
-    if not subst_to_find:
+def contains_any(string, possible_substrings):
+    '''
+    takes a string and a list of possible substrings
+    returns whether any of the substrings exist in the string
+    '''
+    if not possible_substrings:
         return False
-    rgx = join_patterns(subst_to_find)
-    return bool(rgx.search(phrase))
+    rgx = join_patterns(possible_substrings)
+    return bool(rgx.search(string))
 
 
-def filter_duplicates(phrases, words_to_filter):
-    if not words_to_filter:
-        return set(phrases)
-    return set(filter(
-        lambda phrase: not contains_any(phrase, words_to_filter), phrases))
+def contains_none(string, possible_substrings):
+    '''
+    takes a string and a list of possible substrings
+    returns whether none of the substrings exist in the string
+    '''
+    return not contains_any(string, possible_substrings)
+
+
+def remove_matches(strings, substrings):
+    '''
+    takes a list of strings and a list of substrings
+    removes any element in strings in which any of the substrings is found
+    returns the filtered strings as a set
+    '''
+    if not substrings:
+        return set(strings)
+    filtered = filter(lambda desc: contains_none(desc, substrings), strings)
+    return set(filtered)
 
 
 def get_json(path):

@@ -31,21 +31,21 @@ class TestFilters(Test):
 
         self.assertEqual(expected, actual)
 
-    def test_filter_duplicates_should_remove_duplicates(self):
-        words = ['hello', 'world', 'its', 'me']
-        dupes = ['hello', 'world']
+    def test_remove_matches(self):
+        words = ['xxxhelloxxx', 'xxxworldxxx', 'its', 'me']
+        matches = ['hello', 'world']
 
         expected = {'its', 'me'}
-        actual = util.filter_duplicates(words, dupes)
+        actual = util.remove_matches(words, matches)
 
         self.assertEqual(expected, actual)
 
-    def test_filter_duplicates_should_ignore_empty_list(self):
+    def test_remove_matches_should_ignore_empty_list(self):
         words = ['hello', 'world', 'its', 'me']
         dupes = []
 
         expected = {'hello', 'world', 'its', 'me'}
-        actual = util.filter_duplicates(words, dupes)
+        actual = util.remove_matches(words, dupes)
 
         self.assertEqual(expected, actual)
 
@@ -68,6 +68,26 @@ class TestContainsAny(Test):
         words_to_match = []
 
         self.assertFalse(util.contains_any(phrase, words_to_match))
+
+
+class TestContainsNone(Test):
+    def test_returns_true_if_any_word_matches(self):
+        phrase = 'hello world its me'
+        words_to_find = ['its', 'a', 'beautiful', 'world']
+
+        self.assertFalse(util.contains_none(phrase, words_to_find))
+
+    def test_returns_true_if_word_contains_none_substring(self):
+        phrase = 'zim zam BORKBIRK.important-stuff-obfuscated-hereXXXX9990'
+        words_to_find = ['important-stuff']
+
+        self.assertFalse(util.contains_none(phrase, words_to_find))
+
+    def test_should_ignore_empty_set(self):
+        phrase = 'hello world'
+        words_to_match = []
+
+        self.assertTrue(util.contains_none(phrase, words_to_match))
 
 
 class TestFileHelpers(Test):

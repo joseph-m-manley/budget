@@ -46,8 +46,8 @@ def merge_categories(descriptions_to_categorize, categories_with_descriptions):
     returns: dict of lists {food: [abc, xyz, tuv]} , result of adding new descriptions to existing categories
     '''
     known_descriptions = flatten_to_set(categories_with_descriptions.values())
+    unknown_descriptions = util.remove_matches(descriptions_to_categorize, known_descriptions)
     merged = to_dict_of_sets(categories_with_descriptions)
-    unknown_descriptions = util.filter_duplicates(descriptions_to_categorize, known_descriptions)
 
     for unknown_descr in unknown_descriptions:
         if not util.contains_any(unknown_descr, known_descriptions):
@@ -68,7 +68,7 @@ def merge_categories(descriptions_to_categorize, categories_with_descriptions):
 
 def categorize(config):
     noise = util.get_noise(config['noise'])
-    raw_descriptions = util.get_descriptions(config['activity'])  # 'description' column
+    raw_descriptions = util.get_descriptions(config['activity'])
     normalized_descriptions = util.filter_noise(raw_descriptions, noise)
 
     existing_categories = util.get_json(config['categories'])
