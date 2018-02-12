@@ -49,9 +49,9 @@ def merge_categories(descriptions_to_categorize, categories_with_descriptions):
     unknown_descriptions = util.remove_matches(descriptions_to_categorize, known_descriptions)
     merged = to_dict_of_sets(categories_with_descriptions)
 
-    for unknown_descr in unknown_descriptions:
-        if not util.contains_any(unknown_descr, known_descriptions):
-            key = ask_for_key(unknown_descr)
+    for unknown_description in unknown_descriptions:
+        if util.contains_none(unknown_description, known_descriptions):
+            key = ask_for_key(unknown_description)
             known_descriptions.add(key)
 
             category = input('What category does this belong in? ').upper()
