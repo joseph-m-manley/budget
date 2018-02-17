@@ -15,69 +15,104 @@ class TestFlatten(Test):
 
 
 class TestAddCategory(Test):
-    def add_category_adds_to_set_or_creates_new_set(self):
+    def add_category_adds_to_list_or_creates_new(self):
         expected = {1: {1, 2}, 2: {3}}
         actual = {1: {1}}
 
         categorizer.add_category(actual, 1, 2)
         categorizer.add_category(actual, 2, 3)
 
-        self.assertEqual(len(expected.keys()), len(actual.keys()))
-        for k in expected:
-            self.assertEqual(expected[k], actual[k])
+        self.assertDictEqual(expected, actual)
 
 
-class TestMergeCategories(Test):
-    @unittest.skip('requires user input')
-    def test_categorize_should_ignore_duplicates(self):
-        newKeys = {
-            'hello', 'honey', 'honey',
-            'its', 'me',
-            'your', 'your', 'husband',
-            'ralph', 'ralph'
-            }
+class InputFake():
+    def __init__(self, expected_categorymap):
+        self.expected_categorymap = expected_categorymap
+        self.known_keys = [key for values in expected_categorymap.values() for key in values]
+        
+    def ask_for_category(self, key):
+        for category in self.expected_categorymap:
+            if key in self.expected_categorymap[category]:
+                return category
+        
+        return None  
+    
+    def ask_for_key(self, unknown):
+        if len(unknown) < 15:
+            return unknown
+        for key in self.known_keys:
+            if key in unknown:
+                return key
+        
+        return None
 
-        existing = {
+class TestMergeWithCategories(Test):
+    def test_should_ignore_duplicate_descriptions(self):
+        all_descriptions = [
+            'hello',
+            'honey',
+            'its',
+            'me',
+            'your',
+            'husband',
+            'ralph',
+            'honey xyz',
+            'your xyz',
+            'ralph xyz'
+        ]
+
+        known_categories = {
             'a': ['hello'],
             'b': ['its'],
             'c': ['husband']
-            }
+        }
+
+        known_keys = ['hello', 'its', 'husband']
 
         expected = {
             'a': ['hello', 'honey'],
             'b': ['its', 'me'],
             'c': ['your', 'husband'],
             'd': ['ralph']
-            }
+        }
 
-        print("honey: a,  me: b,  your: c,  ralph: d")
-        actual = categorizer.merge_categories(newKeys, existing)
+        actual = categorizer.merge_with_categories(
+                    known_categories, 
+                    known_keys, 
+                    all_descriptions, 
+                    InputFake(expected))
 
         for key in expected:
-            self.assertEqual(sorted(expected[key]), sorted(actual[key]))
+            self.assertListEqual(sorted(expected[key]), sorted(actual[key]))
 
-    # @unittest.skip('requires user input')
-    def test_categorize_should_not_ask_if_entry_matches_existing_key(self):
-        newKeys = {
+    def test_should_ignore_known_descriptions(self):
+        all_descriptions = [
             'bing bang boom hello',
             'its me your husband ralph',
             'the world is so very big',
-            }
+        ]
 
-        existing = {
-            'A': ['HELLO'],
-            'B': ['HUSBAND']
-            }
+        known_categories = {
+            'a': ['hello'],
+            'b': ['husband']
+        }
 
-        expected = {'A': ['HELLO'], 'B': ['HUSBAND'], 'C': ['WORLD']}
+        known_keys = ['hello', 'husband']
 
-        print()
-        for k, v in expected.items():
-            print('{0}: {1}'.format(k, v))
+        expected = {
+            'a': ['hello'],
+            'b': ['husband'],
+            'c': ['world']
+        }
 
-        actual = categorizer.merge_categories(newKeys, existing)
+        actual = categorizer.merge_with_categories(
+                    known_categories,
+                    known_keys,
+                    all_descriptions,
+                    InputFake(expected))
 
-        self.assertDictEqual(expected, actual)
+        for key in expected:
+            self.assertListEqual(sorted(expected[key]), sorted(actual[key]))
 
 
 if __name__ == '__main__':

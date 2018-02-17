@@ -5,7 +5,7 @@ import re
 from csv import DictReader
 
 
-def join_patterns(patterns):
+def create_matcher(patterns):
     '''
     takes a list of regex patterns and makes:
         '(one|two|three|four)'
@@ -25,7 +25,7 @@ def filter_noise(strings, noise):
         ['hello', ...]
     returns it as a set
     '''
-    rgx = join_patterns(noise)
+    rgx = create_matcher(noise)
     filtered = [rgx.sub('', _str).strip() for _str in strings]
     return set(filtered)
 
@@ -37,7 +37,7 @@ def contains_any(string, possible_substrings):
     '''
     if not possible_substrings:
         return False
-    rgx = join_patterns(possible_substrings)
+    rgx = create_matcher(possible_substrings)
     return bool(rgx.search(string))
 
 
@@ -49,16 +49,16 @@ def contains_none(string, possible_substrings):
     return not contains_any(string, possible_substrings)
 
 
-def remove_matches(strings, substrings):
+def remove_known(all_strings, known_strings):
     '''
     takes a list of strings and a list of substrings
     removes any element in strings in which any of the substrings is found
     returns the filtered strings as a set
     '''
-    if not substrings:
-        return set(strings)
-    filtered = filter(lambda desc: contains_none(desc, substrings), strings)
-    return set(filtered)
+    if not known_strings:
+        return set(all_strings)
+    unknown_strings = filter(lambda s: contains_none(s, known_strings), all_strings)
+    return set(unknown_strings)
 
 
 def get_json(path):

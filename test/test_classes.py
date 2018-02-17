@@ -1,7 +1,7 @@
 import unittest
 import json
 from unittest import TestCase as Test
-from budget.Classes import Description, Category, Data
+from budget.Classes import Description, Description2, Category, Data, Input
 
 
 class TestDescription(Test):
@@ -12,6 +12,13 @@ class TestDescription(Test):
         expected = 'activity'
         actual = Description(description, noise)
         self.assertEqual(expected, actual)
+
+
+class TestDescription2(Test):
+    def test(self):
+        d = Description2("hello darkness my old friend")
+        d.contains_any("darkness")
+        d.contains_none("world")
 
 
 class TestCategory(Test):
@@ -47,6 +54,28 @@ class TestData(Test):
         self.assertTrue(isinstance(data.get_noise(), list))
         self.assertTrue(isinstance(data.get_categories(), dict))
         self.assertTrue(isinstance(data.get_budget(), dict))
+
+@unittest.skip('Requires user input')
+class TestInput(Test):
+    def test_ask_for_category(self):
+        expected = 'hello'
+        print(expected)
+        actual = Input().ask_for_category()
+
+        self.assertEqual(expected, actual)
+
+
+    def test_ask_for_key_for_descriptions_longer_than_15_char(self):
+        expected = 'string'
+        print(expected)
+        actual = Input().ask_for_key('what you need to type is \'string\'')
+
+        self.assertEqual(expected, actual)
+
+    def test_does_not_ask_for_key_for_descriptions_shorter_than_15_char(self):
+        expected = 'short'
+        actual = Input().ask_for_key('short')
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

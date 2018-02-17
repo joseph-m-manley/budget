@@ -1,86 +1,72 @@
 #!/usr/bin/env python3
 
-import budget.utilities as util
+from budget.utilities import remove_known, contains_none, filter_noise
+from budget.Classes import Data, Input
 from collections import OrderedDict
 
 
 def add_category(categories, category, value_to_add):
+    value = value_to_add.lower()
     if category in categories:
-        categories[category].add(value_to_add)
+        categories[category].append(value)
     else:
-        categories[category] = {value_to_add}
-
-
-def ask_for_key(words):
-    print('\n%s' % words)
-    key = words
-    if len(key) > 15:
-        x = input('Assign a key? ').upper()
-        if x not in ('Y', 'Q', 'N', ''):
-            key = x
-        elif x == 'Y':
-            key = input('Key: ').upper()
-    return key
-
-
-def to_dict_of_sets(d):
-    return {k: set(v) for k, v in d.items()}
-
-
-def to_dict_of_lists(d):
-    return {k: list(v) for k, v in d.items()}
+        categories[category] = [value]
 
 
 def flatten(list_of_lists):
     return [item for _list in list_of_lists for item in _list]
 
 
-def flatten_to_set(list_of_lists):
-    return set(flatten(list_of_lists))
-
-
-def merge_categories(descriptions_to_categorize, categories_with_descriptions):
+def merge_with_categories(known_categories, known_descriptions, unknown_descriptions, user=Input()):
     '''
-    descriptions_to_categorize: set
-    categories_with_descriptions: dict of lists {food: [abc, xyz]} , comes from categories.json
-    returns: dict of lists {food: [abc, xyz, tuv]} , result of adding new descriptions to existing categories
+    known_categories: dict of lists {food: [abc, xyz]} , comes from categories.json
+    unknown_descriptions: a list of normalized activity descriptions that do not match any known category keys
     '''
-    known_descriptions = flatten_to_set(categories_with_descriptions.values())
-    unknown_descriptions = util.remove_matches(descriptions_to_categorize, known_descriptions)
-    merged = to_dict_of_sets(categories_with_descriptions)
+    for unknown in unknown_descriptions:
+        if contains_none(unknown, known_descriptions):
+            key = user.ask_for_key(unknown)
+            category = user.ask_for_category(key)
+            # (key, category) = user.determine_key_and_category(unknown)
 
-    for unknown_description in unknown_descriptions:
-        if util.contains_none(unknown_description, known_descriptions):
-            key = ask_for_key(unknown_description)
-            known_descriptions.add(key)
-
-            category = input('What category does this belong in? ').upper()
+            known_descriptions.append(key)
 
             if category == 'Q':
                 break  # quit
             elif category == '':
                 continue  # skip this item
 
-            add_category(merged, category, key)
+            add_category(known_categories, category, key)
 
-    return to_dict_of_lists(merged)
+    return known_categories
 
 
-def categorize(config):
-    noise = util.get_noise(config['noise'])
-    raw_descriptions = util.get_descriptions(config['activity'])
-    normalized_descriptions = util.filter_noise(raw_descriptions, noise)
+def categorize(descriptions, known_categories):
+    '''
+    descriptions: activity descriptions (with noise removed)
+    known_categories: dict of lists {food: [abc, xyz]} , comes from categories.json
+    returns: dict of lists {food: [abc, xyz, tuv]} , result of adding new descriptions to existing categories
+    '''
+    known_descriptions = flatten(known_categories.values())
+    unknown_descriptions = remove_known(descriptions, known_descriptions)
 
-    existing_categories = util.get_json(config['categories'])
-    return merge_categories(normalized_descriptions, existing_categories)
+    return merge_with_categories(known_categories, known_descriptions, unknown_descriptions)
+
+
+def get_normalized_descriptions(config):
+    noise = config.get_noise()
+    raw_descriptions = config.get_descriptions()
+    return filter_noise(raw_descriptions, noise)
 
 
 def main():
-    config = util.get_config()
-    categorized = categorize(config)
+    config = Data('config.json')
+    known_categories = config.get_categories()
+    descriptions = get_normalized_descriptions(config)
+
+    categorized = categorize(descriptions, known_categories)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':
-        util.save_json(categorized, config['categories'])
+        config.save_categories(categorized)
 
 
 if __name__ == '__main__':

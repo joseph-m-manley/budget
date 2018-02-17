@@ -31,27 +31,27 @@ class TestFilters(Test):
 
         self.assertEqual(expected, actual)
 
-    def test_remove_matches(self):
+    def test_remove_known(self):
         words = ['xxxhelloxxx', 'xxxworldxxx', 'its', 'me']
         matches = ['hello', 'world']
 
         expected = {'its', 'me'}
-        actual = util.remove_matches(words, matches)
+        actual = util.remove_known(words, matches)
 
         self.assertEqual(expected, actual)
 
-    def test_remove_matches_should_ignore_empty_list(self):
+    def test_remove_known_should_ignore_empty_list(self):
         words = ['hello', 'world', 'its', 'me']
         dupes = []
 
         expected = {'hello', 'world', 'its', 'me'}
-        actual = util.remove_matches(words, dupes)
+        actual = util.remove_known(words, dupes)
 
         self.assertEqual(expected, actual)
 
 
 class TestContainsAny(Test):
-    def test_returns_true_if_any_word_matches(self):
+    def test_returns_true_if_any_word_known(self):
         phrase = 'hello world its me'
         words_to_find = ['its', 'a', 'beautiful', 'world']
 
@@ -71,7 +71,7 @@ class TestContainsAny(Test):
 
 
 class TestContainsNone(Test):
-    def test_returns_true_if_any_word_matches(self):
+    def test_returns_true_if_any_word_known(self):
         phrase = 'hello world its me'
         words_to_find = ['its', 'a', 'beautiful', 'world']
 

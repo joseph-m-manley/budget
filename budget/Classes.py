@@ -35,10 +35,21 @@ class Description():
         else:
             raise TypeError("thing should be a Description or a string")
 
+    def __str__(self):
+        return self.string
+
     def remove_noise(self, string, noise):
         pattern = '(%s)' % '|'.join(noise)
         matcher = re.compile(pattern, re.IGNORECASE)
         return matcher.sub('', string).strip()
+
+from budget import utilities
+class Description2(str):
+    def contains_any(self, possible_substrings):
+        return utilities.contains_any(self, possible_substrings)
+
+    def contains_none(self, possible_substrings):
+        return not self.contains_any(possible_substrings)
 
 
 import json
@@ -71,12 +82,36 @@ class Data():
         return try_get_json(self.paths['noise'])['noise']
 
     def get_budget(self):
-        return try_get_json(self.paths['budget'])['budget']
+        return try_get_json(self.paths['budget'])['expenses']
 
     def get_descriptions(self):
         with open(self.paths['activity']) as csv:
             table = DictReader(csv)
             return set(row['Description'] for row in table)
+
+    def save_categories(self, categories):
+        save_json(categories, self.paths['categories'])
+
+
+class Input():
+    def ask_for_category(self, key):
+        return input('What category does %s belong in? ' % key).lower()
+
+    def ask_for_key(self, description):
+        print('\n%s' % description)
+        key = description
+        if len(key) > 15:
+            x = input('Assign a key? ').lower()
+            if x not in ('Y', 'Q', 'N', ''):
+                key = x
+            elif x == 'Y':
+                key = input('Key: ').lower()
+        return key
+    
+    def determine_key_and_category(self, unknown):
+        key = self.ask_for_key(unknown)
+        category = self.ask_for_category(key)
+        return (key, category)
 
 
 class Category():
