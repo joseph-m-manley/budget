@@ -21,13 +21,12 @@ def filter_noise(strings, noise):
         ['xxxhelloxxx', ...]
     and regex patterns:
         ['x{3}', ...]
-    creates a list of activities with the noise removed:
+    returns a list of activities with the noise removed:
         ['hello', ...]
-    returns it as a set
     '''
     rgx = create_matcher(noise)
     filtered = [rgx.sub('', _str).strip() for _str in strings]
-    return set(filtered)
+    return filtered
 
 
 def contains_any(string, possible_substrings):
@@ -53,12 +52,11 @@ def remove_known(all_strings, known_strings):
     '''
     takes a list of strings and a list of substrings
     removes any element in strings in which any of the substrings is found
-    returns the filtered strings as a set
     '''
     if not known_strings:
-        return set(all_strings)
+        return all_strings
     unknown_strings = filter(lambda s: contains_none(s, known_strings), all_strings)
-    return set(unknown_strings)
+    return list(unknown_strings)
 
 
 def get_json(path):

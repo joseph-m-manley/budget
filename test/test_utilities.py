@@ -8,86 +8,86 @@ class TestFilters(Test):
         words = ['hello xxxx1234', 'foo world', 'its#9999', '    me   ']
         noise = ["foo", "#\\d+", "X+\\d{4}"]
 
-        expected = {'hello', 'world', 'its', 'me'}
+        expected = ['hello', 'world', 'its', 'me']
         actual = util.filter_noise(words, noise)
 
-        self.assertEqual(expected, actual)
+        self.assertListEqual(expected, actual)
 
     def test_filter_noise_always_strips_whitespace(self):
         words = [' 1hello1 ', ' 2world2 ', ' 3its3 ', ' 4me4 ']
         noise = ["\\d+"]
 
-        expected = {'hello', 'world', 'its', 'me'}
+        expected = ['hello', 'world', 'its', 'me']
         actual = util.filter_noise(words, noise)
 
-        self.assertEqual(expected, actual)
+        self.assertListEqual(expected, actual)
 
     def test_filter_noise_returns_original_if_noise_is_empty(self):
         words = ['hello xxxx1234', 'foo world', 'its#9999', '    me   ']
         noise = []
 
-        expected = {'hello xxxx1234', 'foo world', 'its#9999', 'me'}
+        expected = ['hello xxxx1234', 'foo world', 'its#9999', 'me']
         actual = util.filter_noise(words, noise)
 
-        self.assertEqual(expected, actual)
+        self.assertListEqual(expected, actual)
 
     def test_remove_known(self):
         words = ['xxxhelloxxx', 'xxxworldxxx', 'its', 'me']
         matches = ['hello', 'world']
 
-        expected = {'its', 'me'}
+        expected = ['its', 'me']
         actual = util.remove_known(words, matches)
 
-        self.assertEqual(expected, actual)
+        self.assertListEqual(expected, actual)
 
     def test_remove_known_should_ignore_empty_list(self):
         words = ['hello', 'world', 'its', 'me']
-        dupes = []
+        matches = []
 
-        expected = {'hello', 'world', 'its', 'me'}
-        actual = util.remove_known(words, dupes)
+        expected = ['hello', 'world', 'its', 'me']
+        actual = util.remove_known(words, matches)
 
-        self.assertEqual(expected, actual)
+        self.assertListEqual(expected, actual)
 
 
 class TestContainsAny(Test):
     def test_returns_true_if_any_word_known(self):
-        phrase = 'hello world its me'
-        words_to_find = ['its', 'a', 'beautiful', 'world']
+        description = 'hello world its me'
+        existing_keys = ['its', 'a', 'beautiful', 'world']
 
-        self.assertTrue(util.contains_any(phrase, words_to_find))
+        self.assertTrue(util.contains_any(description, existing_keys))
 
     def test_returns_true_if_word_contains_any_substring(self):
-        phrase = 'zim zam BORKBIRK.important-stuff-obfuscated-hereXXXX9990'
-        words_to_find = ['important-stuff']
+        description = 'zim zam BORKBIRK.important-stuff-obfuscated-hereXXXX9990'
+        existing_keys = ['important-stuff']
 
-        self.assertTrue(util.contains_any(phrase, words_to_find))
+        self.assertTrue(util.contains_any(description, existing_keys))
 
     def test_should_ignore_empty_set(self):
-        phrase = 'hello world'
-        words_to_match = []
+        description = 'hello world'
+        existing_keys = []
 
-        self.assertFalse(util.contains_any(phrase, words_to_match))
+        self.assertFalse(util.contains_any(description, existing_keys))
 
 
 class TestContainsNone(Test):
     def test_returns_true_if_any_word_known(self):
-        phrase = 'hello world its me'
-        words_to_find = ['its', 'a', 'beautiful', 'world']
+        description = 'hello world its me'
+        existing_keys = ['its', 'a', 'beautiful', 'world']
 
-        self.assertFalse(util.contains_none(phrase, words_to_find))
+        self.assertFalse(util.contains_none(description, existing_keys))
 
     def test_returns_true_if_word_contains_none_substring(self):
-        phrase = 'zim zam BORKBIRK.important-stuff-obfuscated-hereXXXX9990'
-        words_to_find = ['important-stuff']
+        description = 'zim zam BORKBIRK.important-stuff-obfuscated-hereXXXX9990'
+        existing_keys = ['important-stuff']
 
-        self.assertFalse(util.contains_none(phrase, words_to_find))
+        self.assertFalse(util.contains_none(description, existing_keys))
 
     def test_should_ignore_empty_set(self):
-        phrase = 'hello world'
-        words_to_match = []
+        description = 'hello world'
+        existing_keys = []
 
-        self.assertTrue(util.contains_none(phrase, words_to_match))
+        self.assertTrue(util.contains_none(description, existing_keys))
 
 
 class TestFileHelpers(Test):
