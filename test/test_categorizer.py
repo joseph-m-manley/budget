@@ -1,18 +1,9 @@
 import unittest
 import budget.categorizer as categorizer
+
 from unittest import TestCase as Test
 from collections import OrderedDict
 from budget.Classes import CategoryMap
-
-
-class TestFlatten(Test):
-    def runTest(self):
-        nested_list = [[1, 2], [3, 4, 5], [6], [], [7, 8, 9]]
-
-        expected = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        actual = categorizer.flatten(nested_list)
-
-        self.assertEqual(expected, actual)
 
 
 class TestAddCategory(Test):
@@ -52,7 +43,7 @@ class InputFake():
         
         return None
 
-class TestMergeWithCategories(Test):
+class TestCategorize(Test):
     def test_should_ignore_duplicate_descriptions(self):
         all_descriptions = [
             'hello',
@@ -80,7 +71,7 @@ class TestMergeWithCategories(Test):
             'd': ['ralph']
         })
 
-        actual = categorizer.merge_with_categories(
+        actual = categorizer.categorize(
                     CategoryMap(known_categories),
                     all_descriptions, 
                     InputFake(expected))
@@ -105,7 +96,7 @@ class TestMergeWithCategories(Test):
             'c': ['world']
         })
 
-        actual = categorizer.merge_with_categories(
+        actual = categorizer.categorize(
                     CategoryMap(known_categories),
                     all_descriptions,
                     InputFake(expected))
@@ -140,7 +131,7 @@ class TestMergeWithCategories(Test):
             'home': ['bar soap', 'razor blades', 'pipe tobacco', 'shoes']    
         })
 
-        actual = categorizer.merge_with_categories(
+        actual = categorizer.categorize(
                     CategoryMap(known_categories),
                     all_descriptions,
                     InputFake(expected))

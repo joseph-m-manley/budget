@@ -144,8 +144,9 @@ class TestData(Test):
     def test_data(self):
         data = Data(self.path)
         self.assertTrue(isinstance(data.get_descriptions(), (list, set)))
+        self.assertTrue(isinstance(data.get_normalized_descriptions(), (list, set)))
         self.assertTrue(isinstance(data.get_noise(), list))
-        self.assertTrue(isinstance(data.get_categories(), dict))
+        self.assertTrue(isinstance(data.get_categories(), (CategoryMap, dict)))
         self.assertTrue(isinstance(data.get_budget(), dict))
 
 @unittest.skip('Requires user input')

@@ -102,7 +102,7 @@ class Data():
         self.paths = get_json(configPath)
 
     def get_categories(self):
-        return try_get_json(self.paths['categories'])
+        return CategoryMap(try_get_json(self.paths['categories']))
 
     def get_noise(self):
         return try_get_json(self.paths['noise'])['noise']
