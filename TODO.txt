@@ -1,4 +1,8 @@
 TODO:
+- what would it look like for categorizer to use an inverted map (keys to categories)?
+
+- we are checking for matches twice: first we "remove_known", then we still check if the item is known when we loop. If we remove the filtering part, it would make testing easier.
+
 - add a menu to let user assign a category using existing categories with numbers as keys:
     What category does this belong in? (1) Food  (2) Home  (3) Fun
 
@@ -13,9 +17,5 @@ TODO:
 - how to handle a description that matches multiple key words
 
 - should the contract to match be a single word? It may be more reliable to match a keyword a against a list of words, so the description could be split into a list. The downside is that some descriptions are mutliple words, like 'rabble coffee'. There would need to be a single unique word for each store.
-
-- change data layer to a "flat" injectable query object to make stubbing test data easier
-
-- make console a UI injectable for stubbing test data
 
 - handle budgets that don't match (if a category doesn't exist in the budget, just subtract zero)

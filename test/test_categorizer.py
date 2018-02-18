@@ -152,7 +152,8 @@ class TestMergeWithCategories(Test):
         actual = categorizer.merge_with_categories(
                     known_categories,
                     known_keys,
-                    all_descriptions)
+                    all_descriptions,
+                    InputFake(expected))
             
         for key in expected:
             self.assertListEqual(sorted(expected[key]), sorted(actual[key]))
