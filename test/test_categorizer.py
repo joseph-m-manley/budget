@@ -114,6 +114,49 @@ class TestMergeWithCategories(Test):
         for key in expected:
             self.assertListEqual(sorted(expected[key]), sorted(actual[key]))
 
+    def test_with_realistic_data(self):
+        all_descriptions = [
+            "ach debit       xxxxx0987 electricity ",
+            "ach debit       1-1abcdef gas ",
+            "debit card purchase   xxxxx1234 apples #118            city st ",
+            "ach webrecur   xxxxx6161 school ",
+            "debit card purchase   xxxxx4321 coffee    city st ",
+            "debit card purchase   xxxxx1234 razor blades m5789          city      st ",
+            "debit card purchase   xxxxx4321 sandwich meat             city st ",
+            "recurring debit card  xxxxx5678 water             xxxxx9622 st ",
+            "debit card purchase   xxxxx4321 pipe tobacco           xxxxx4000  st ",
+            "debit card purchase   xxxxx1234 bar soap       xxxxx9100 st ",
+            "debit card purchase   xxxxx5678 shoes    city      st "
+        ]
+
+        known_categories = {
+            'food': ['apples', 'coffee'],
+            'bills': ['electricity', 'gas'],
+            'home': ['bar soap']
+        }
+
+        known_keys = [
+            'apples',
+            'coffee',
+            'electricity',
+            'gas',
+            'bar soap'
+        ]
+
+        expected = {
+            'food': ['apples', 'coffee', 'sandwich meat'],
+            'bills': ['electricity', 'gas', 'school', 'water'],
+            'home': ['bar soap', 'razor blades', 'pipe tobacco', 'shoes']    
+        }
+
+        actual = categorizer.merge_with_categories(
+                    known_categories,
+                    known_keys,
+                    all_descriptions)
+            
+        for key in expected:
+            self.assertListEqual(sorted(expected[key]), sorted(actual[key]))
+
 
 if __name__ == '__main__':
     unittest.main()
