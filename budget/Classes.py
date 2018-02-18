@@ -1,25 +1,51 @@
 class CategoryMap():
-    def __init__(self):
-        self.d = dict()
+    def __init__(self, dictOfLists = dict()):
+        self.d = dictOfLists
+        self.keywords = {x for _list in dictOfLists.values() for x in _list}
 
-    def __init__(self, dictOfLists):
-        self.d = {k: v for k, v in dictOfLists}
+    def __eq__(self, other):
+        if not isinstance(other, CategoryMap):
+            raise TypeError()
+        for category in self.d:
+            if category not in other:
+                return False
+            if sorted(self.d[category]) != sorted(other[category]):
+                return False
+        return True
 
-    def __safe_get(self, key):
-        if key not in self.d:
-            self.d[key] = []
-        return self.d[key]
+    def __contains__(self, item):
+        return item in self.d
 
-    def __getitem__(self, key):
-        return self.get(key)
+    def __delitem__(self, item):
+        del self.d[item]
 
-    def get(self, key):
-        if key not in self.d:
-            raise KeyError()
-        return self.d[key]
+    def __len__(self):
+        return len(self.d)
 
-    def add(self, key, value):
-        self.__safe_get(key).append(value)
+    def __iter__(self):
+        for x in self.d:
+            yield x
+
+    def __getitem__(self, category):
+        return self.d[category]
+
+    def get(self, category):
+        return self.d[category]
+
+    def __safe_get(self, category):
+        if category not in self.d:
+            self.d[category] = []
+        return self.d[category]
+
+    def add(self, category, keyword):
+        self.__safe_get(category).append(keyword)
+        self.keywords.add(keyword)
+
+    def keyword_exists(self, description):
+        for keyword in self.keywords:
+            if keyword in description:
+                return True
+        return False
 
 
 import re
@@ -70,7 +96,7 @@ def try_get_json(path):
         print(e)
         return dict()
 
-
+from budget.utilities import filter_noise
 class Data():
     def __init__(self, configPath):
         self.paths = get_json(configPath)
@@ -88,6 +114,11 @@ class Data():
         with open(self.paths['activity']) as csv:
             table = DictReader(csv)
             return set(row['Description'] for row in table)
+
+    def get_normalized_descriptions(self):
+        noise = self.get_noise()
+        raw_descriptions = self.get_descriptions()
+        return filter_noise(raw_descriptions, noise)
 
     def save_categories(self, categories):
         save_json(categories, self.paths['categories'])
@@ -108,8 +139,8 @@ class Input():
                 key = input('Key: ').lower()
         return key
     
-    def determine_key_and_category(self, unknown):
-        key = self.ask_for_key(unknown)
+    def determine_key_and_category(self, description):
+        key = self.ask_for_key(description)
         category = self.ask_for_category(key)
         return (key, category)
 
