@@ -8,7 +8,7 @@ def categorize(known_categories, unknown_descriptions, user=Input()):
         if not known_categories.keyword_exists(unknown):
             key, category = user.determine_key_and_category(unknown)
 
-            if category == 'q':
+            if category.upper() == 'Q':
                 break  # quit
             elif category != '':
                 known_categories.add(category, key)

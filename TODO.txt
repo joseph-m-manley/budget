@@ -18,4 +18,3 @@ TODO:
 
 BUGS:
 - CategoryMap does not ignore newly learned keys
-- Fix uppercase vs lowercase

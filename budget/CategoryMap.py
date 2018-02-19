@@ -1,7 +1,10 @@
 class CategoryMap():
-    def __init__(self, dictOfLists = dict()):
-        self.d = dictOfLists
-        self.keywords = {x for _list in dictOfLists.values() for x in _list}
+    def __init__(self, intializerDict = dict()):
+        self.d = dict()
+        self.keywords = set()
+        for category in intializerDict:
+            for keyword in intializerDict[category]:
+                self.add(category, keyword)
 
     def __eq__(self, other):
         if not isinstance(other, CategoryMap):
@@ -39,8 +42,8 @@ class CategoryMap():
 
     def add(self, category, keyword):
         c, k = category.lower(), keyword.lower()
-        self.__safe_get(category).append(keyword)
-        self.keywords.add(keyword)
+        self.__safe_get(c).append(k)
+        self.keywords.add(k)
 
     def keyword_exists(self, description):
         for keyword in self.keywords:

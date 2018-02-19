@@ -93,6 +93,49 @@ class TestCategoryMapKeywordExists(Test):
 
         self.assertTrue(c.keyword_exists(description))
 
+class TestCategoryMapCaseSensitivity(Test):
+    def test_maintains_categories_as_lowercase(self):
+        c = CategoryMap()
+        c.add('A', 'HELLO')
+        c.add('A', 'HONEY')
+        c.add('B', 'ITS')
+        c.add('B', 'ME')
+        c.add('C', 'YOUR')
+        c.add('C', 'HUSBAND')
+        c.add('D', 'RALPH')
+
+        for category in c:
+            self.assertTrue(category.islower())
+
+    def test_maintains_keywords_as_lowercase(self):
+        c = CategoryMap()        
+        c.add('A', 'HELLO')
+        c.add('A', 'HONEY')
+        c.add('B', 'ITS')
+        c.add('B', 'ME')
+        c.add('C', 'YOUR')
+        c.add('C', 'HUSBAND')
+        c.add('D', 'RALPH')        
+
+        for category in c:
+            keywords = c[category]
+            for keyword in keywords:
+                self.assertTrue(keyword.islower())
+
+    def test_ensures_intializing_dict_enforces_case(self):
+        c = CategoryMap({
+            'A': ['HELLO', 'HONEY'],
+            'B': ['ITS', 'ME'],
+            'C': ['YOUR', 'HUSBAND'],
+            'D': ['RALPH']
+        })
+
+        for category in c:
+            # self.assertTrue(category.islower())
+            keywords = c[category]
+            for keyword in keywords:
+                self.assertTrue(keyword.islower())
+
 
 if __name__ == '__main__':
     main()
