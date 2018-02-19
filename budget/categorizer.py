@@ -2,29 +2,34 @@ from budget.CategoryMap import CategoryMap
 from budget.Data import Data
 from budget.Input import Input
 
+class Categorizer():
+    def __init__(self, known_categories, finder=Input()):
+        self.known_categories = known_categories
+        self.finder = finder
 
-def categorize(known_categories, unknown_descriptions, user=Input()):
-    for unknown in unknown_descriptions:
-        if not known_categories.keyword_exists(unknown):
-            key, category = user.determine_key_and_category(unknown)
+    def categorize(self, unknown_descriptions):
+        for unknown in unknown_descriptions:
+            if not self.known_categories.keyword_exists(unknown):
+                key, category = self.finder.determine_key_and_category(unknown)
 
-            if category.upper() == 'Q':
-                break  # quit
-            elif category != '':
-                known_categories.add(category, key)
+                if category.upper() == 'Q':
+                    break  # quit
+                elif category != '':
+                    self.known_categories.add(category, key)
 
-    return known_categories
+        return self.known_categories
 
 
 def main():
-    config = Data('config.json')
-    known_categories = config.get_categories()
-    descriptions = config.get_normalized_descriptions()
+    data = Data('data.json')
+    known_categories = data.get_categories()
+    categorizer = Categorizer(known_categories)
 
-    categorized = categorize(known_categories, descriptions)
+    descriptions = data.get_conditioned_descriptions()
+    categorized = categorizer.categorize(descriptions)
 
     if input('Do you want to save? Y or N: ').upper() == 'Y':
-        config.save_categories(categorized)
+        data.save_categories(categorized)
 
 
 if __name__ == '__main__':

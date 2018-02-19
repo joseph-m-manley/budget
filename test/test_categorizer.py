@@ -1,4 +1,5 @@
 from budget.categorizer import categorize
+from budget.categorizer import Categorizer
 from budget.CategoryMap import CategoryMap
 from unittest import TestCase as Test, main
 
@@ -55,10 +56,8 @@ class TestCategorize(Test):
             'd': ['ralph']
         })
 
-        actual = categorize(
-                    CategoryMap(known_categories),
-                    all_descriptions, 
-                    InputFake(expected))
+        c = Categorizer(CategoryMap(known_categories), InputFake(expected))
+        actual = c.categorize(all_descriptions)
     
         self.assertEqual(expected, actual)
 
@@ -80,10 +79,8 @@ class TestCategorize(Test):
             'c': ['world']
         })
 
-        actual = categorize(
-                    CategoryMap(known_categories),
-                    all_descriptions,
-                    InputFake(expected))
+        c = Categorizer(CategoryMap(known_categories), InputFake(expected))
+        actual = c.categorize(all_descriptions)
 
         self.assertEqual(expected, actual)
 
@@ -114,10 +111,8 @@ class TestCategorize(Test):
             'home': ['bar soap', 'razor blades', 'pipe tobacco', 'shoes']    
         })
 
-        actual = categorize(
-                    CategoryMap(known_categories),
-                    all_descriptions,
-                    InputFake(expected))
+        c = Categorizer(CategoryMap(known_categories), InputFake(expected))
+        actual = c.categorize(all_descriptions)
             
         self.assertEqual(expected, actual)
 

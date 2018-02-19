@@ -51,7 +51,7 @@ class Data():
             table = DictReader(csv)
             return [row['Description'] for row in table]
 
-    def get_normalized_descriptions(self):
+    def get_conditioned_descriptions(self):
         noise = self.get_noise()
         raw_descriptions = self.get_descriptions()
         return filter_noise(raw_descriptions, noise)
