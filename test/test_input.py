@@ -6,7 +6,7 @@ from unittest import TestCase as Test
 
 
 class TestInputAskForKeyword(Test):
-    def test_ask_for_key_for_descriptions_longer_than_15_char(self):
+    def test_asks_for_key_for_descriptions_longer_than_15_char(self):
         expected = 'string'
         print(expected)
         actual = Input().ask_for_key('what you need to type is \'string\'')

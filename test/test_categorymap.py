@@ -1,38 +1,27 @@
 from budget.CategoryMap import CategoryMap
 from unittest import TestCase as Test, main
 
+hello_world_its_me = {
+    'a': ['hello', 'world'],
+    'b': ['its', 'me']
+}
+
 class TestCategoryMap(Test):
     def test_add_and_get(self):
-        expected = {
-            'a': ['hello', 'world'],
-            'b': ['its', 'me']
-        }
+        expected = hello_world_its_me
 
         c = CategoryMap({'a': ['hello'], 'b': ['its']})
         c.add('a', 'world')
         c.add('b', 'me')
 
-        self.assertListEqual(
-            c.get('a'),
-            expected['a']
-        )
-
-        self.assertListEqual(
-            c['a'],
-            expected['a']
-        )
+        self.assertListEqual(c.get('a'), expected['a'])
+        self.assertListEqual(c.get('b'), expected['b'])
+        self.assertListEqual(c['a'], expected['a'])
+        self.assertListEqual(c['b'], expected['b'])
 
     def test_eq(self):
-        c = CategoryMap({
-            'a': ['hello', 'world'],
-            'b': ['its', 'me']
-        })
-
-        eq = CategoryMap({
-            'a': ['hello', 'world'],
-            'b': ['its', 'me']
-        })
-
+        c = CategoryMap(hello_world_its_me)
+        eq = CategoryMap(hello_world_its_me)
         neq = CategoryMap({
             'a': ['hello', 'me'],
             'b': ['its', 'world']
@@ -42,24 +31,16 @@ class TestCategoryMap(Test):
         self.assertNotEqual(c, neq)
 
     def test_iterates(self):
-        expected = {
-            'a': ['hello', 'world'],
-            'b': ['its', 'me']
-        }
-        c = CategoryMap(expected)
+        c = CategoryMap(hello_world_its_me)
 
         for category in c:
             self.assertListEqual(
                 c[category],
-                expected[category]
+                hello_world_its_me[category]
             )
 
     def test_len(self):
-        c = CategoryMap({
-            'a': ['hello', 'world'],
-            'b': ['its', 'me']
-        })
-
+        c = CategoryMap({'a': [], 'b': []})
         self.assertEqual(2, len(c))
 
     def test_contains(self):
@@ -72,10 +53,7 @@ class TestCategoryMap(Test):
 
 class TestCategoryMapKeywordExists(Test):
     def test_keyword_exists(self):
-        c = CategoryMap({
-            'a': ['hello', 'world'],
-            'b': ['its', 'me']
-        })
+        c = CategoryMap(hello_world_its_me)
 
         contains = 'world on fire'
         doesnt = 'rabbit punch'
@@ -84,14 +62,26 @@ class TestCategoryMapKeywordExists(Test):
         self.assertFalse(c.keyword_exists(doesnt))
 
     def test_finds_keyword_among_noise(self):
-        c = CategoryMap({
-            'a': ['hello', 'world'],
-            'b': ['its', 'important-stuff']
-        })
+        c = CategoryMap(hello_world_its_me)
         
         description = 'zim zam BORKBIRK.important-stuff-obfuscated-hereXXXX9990'
 
         self.assertTrue(c.keyword_exists(description))
+
+    def test_learns_new_keywords(self):
+        c = CategoryMap(hello_world_its_me)
+
+        new_keyword = 'bonesaw'
+        self.assertFalse(c.keyword_exists(new_keyword))
+        
+        c.add('b', new_keyword)
+        self.assertTrue(c.keyword_exists(new_keyword))
+
+        new_keyword = 'is ready'
+        self.assertFalse(c.keyword_exists(new_keyword))
+
+        c.add('c', new_keyword)
+        self.assertTrue(c.keyword_exists(new_keyword))
 
 class TestCategoryMapCaseSensitivity(Test):
     def test_maintains_categories_as_lowercase(self):
