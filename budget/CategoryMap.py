@@ -38,6 +38,7 @@ class CategoryMap():
         return self.d[category]
 
     def add(self, category, keyword):
+        c, k = category.lower(), keyword.lower()
         self.__safe_get(category).append(keyword)
         self.keywords.add(keyword)
 
@@ -46,4 +47,7 @@ class CategoryMap():
             if keyword in description:
                 return True
         return False
+
+    def to_json(self):
+        return self.d
 

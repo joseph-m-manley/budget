@@ -1,4 +1,3 @@
-import unittest
 from budget.CategoryMap import CategoryMap
 from unittest import TestCase as Test, main
 
@@ -94,5 +93,6 @@ class TestCategoryMapKeywordExists(Test):
 
         self.assertTrue(c.keyword_exists(description))
 
+
 if __name__ == '__main__':
-    unittest.main()
+    main()

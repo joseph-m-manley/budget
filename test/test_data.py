@@ -3,7 +3,7 @@ from budget.Data import Data
 from json import dump
 from os import remove
 from unittest import TestCase as Test
-from unittest import main as run_test
+from unittest import main
 
 
 class TestData(Test):
@@ -32,4 +32,4 @@ class TestData(Test):
 
 
 if __name__ == '__main__':
-    run_test()
+    main()

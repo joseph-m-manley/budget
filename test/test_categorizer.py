@@ -1,20 +1,6 @@
-import unittest
-import budget.categorizer as categorizer
-
-from unittest import TestCase as Test
-from collections import OrderedDict
-from budget.Classes import CategoryMap
-
-
-class TestAddCategory(Test):
-    def add_category_adds_to_list_or_creates_new(self):
-        expected = {1: {1, 2}, 2: {3}}
-        actual = {1: {1}}
-
-        categorizer.add_category(actual, 1, 2)
-        categorizer.add_category(actual, 2, 3)
-
-        self.assertDictEqual(expected, actual)
+from budget.categorizer import categorize
+from budget.CategoryMap import CategoryMap
+from unittest import TestCase as Test, main
 
 
 class InputFake():
@@ -30,8 +16,7 @@ class InputFake():
     def ask_for_category(self, key):
         for category in self.categorymap:
             if key in self.categorymap[category]:
-                return category
-        
+                return category        
         return None  
     
     def ask_for_key(self, unknown):
@@ -39,8 +24,7 @@ class InputFake():
             return unknown
         for key in self.known_keys:
             if key in unknown:
-                return key
-        
+                return key        
         return None
 
 class TestCategorize(Test):
@@ -71,7 +55,7 @@ class TestCategorize(Test):
             'd': ['ralph']
         })
 
-        actual = categorizer.categorize(
+        actual = categorize(
                     CategoryMap(known_categories),
                     all_descriptions, 
                     InputFake(expected))
@@ -96,14 +80,13 @@ class TestCategorize(Test):
             'c': ['world']
         })
 
-        actual = categorizer.categorize(
+        actual = categorize(
                     CategoryMap(known_categories),
                     all_descriptions,
                     InputFake(expected))
 
         self.assertEqual(expected, actual)
 
-    @unittest.skip('')
     def test_with_realistic_data(self):
         all_descriptions = [
             "ach debit       xxxxx0987 electricity ",
@@ -131,7 +114,7 @@ class TestCategorize(Test):
             'home': ['bar soap', 'razor blades', 'pipe tobacco', 'shoes']    
         })
 
-        actual = categorizer.categorize(
+        actual = categorize(
                     CategoryMap(known_categories),
                     all_descriptions,
                     InputFake(expected))
@@ -140,4 +123,4 @@ class TestCategorize(Test):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

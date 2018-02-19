@@ -1,15 +1,15 @@
-import unittest
 import json
+import unittest
+
+from budget.Input import Input
 from unittest import TestCase as Test
-from budget.Classes import Data, Input
 
 
-@unittest.skip('Requires user input')
 class TestInput(Test):
     def test_ask_for_category(self):
         expected = 'hello'
         print(expected)
-        actual = Input().ask_for_category()
+        actual = Input().ask_for_category('expected: \'hello\'')
 
         self.assertEqual(expected, actual)
 

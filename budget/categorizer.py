@@ -1,22 +1,17 @@
-#!/usr/bin/env python3
+from budget.CategoryMap import CategoryMap
+from budget.Data import Data
+from budget.Input import Input
 
-from budget.Classes import Data, Input, CategoryMap
 
 def categorize(known_categories, unknown_descriptions, user=Input()):
-    '''
-    known_categories: CategoryMap intialized from categories.json
-    unknown_descriptions: a list of normalized activity descriptions from activity file
-    '''
     for unknown in unknown_descriptions:
         if not known_categories.keyword_exists(unknown):
-            (key, category) = user.determine_key_and_category(unknown)
+            key, category = user.determine_key_and_category(unknown)
 
-            if category == 'Q':
+            if category == 'q':
                 break  # quit
-            elif category == '':
-                continue  # skip this item
-
-            known_categories.add(category, key)
+            elif category != '':
+                known_categories.add(category, key)
 
     return known_categories
 

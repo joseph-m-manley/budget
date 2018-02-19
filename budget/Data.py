@@ -1,9 +1,22 @@
 import json
+import re
 
-from budget.utilities import filter_noise
 from budget.CategoryMap import CategoryMap
 from csv import DictReader
 
+def filter_noise(strings, noise):
+    '''
+    takes a list of raw strings:
+        ['xxxhelloxxx', ...]
+    and regex patterns:
+        ['x{3}', ...]
+    returns a list of activities with the noise removed:
+        ['hello', ...]
+    '''
+    pattern = '(%s)' % '|'.join(noise)
+    matcher = re.compile(pattern, re.IGNORECASE)
+    filtered = [matcher.sub('', _str).strip() for _str in strings]
+    return filtered
 
 def get_json(path):
     with open(path) as file:
@@ -16,7 +29,7 @@ def save_json(j, path):
 def try_get_json(path):
     try:
         return get_json(path)
-    except FileNotFoundError as e:
+    except Exception as e:
         print(e)
         return dict()
 
@@ -36,12 +49,12 @@ class Data():
     def get_descriptions(self):
         with open(self.paths['activity']) as csv:
             table = DictReader(csv)
-            return set(row['Description'] for row in table)
+            return [row['Description'] for row in table]
 
     def get_normalized_descriptions(self):
         noise = self.get_noise()
         raw_descriptions = self.get_descriptions()
         return filter_noise(raw_descriptions, noise)
 
-    def save_categories(self, categories):
-        save_json(categories, self.paths['categories'])
+    def save_categories(self, categoryMap):
+        save_json(categoryMap.to_json(), self.paths['categories'])
