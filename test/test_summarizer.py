@@ -1,7 +1,5 @@
-import datetime
-import unittest
-from unittest import TestCase as Test
-import budget.summarizer as summarizer
+from budget import summarizer
+from unittest import TestCase as Test, main
 
 
 class TestGetTransactionAmount(Test):
@@ -107,4 +105,4 @@ class TestCalculateTotals(Test):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

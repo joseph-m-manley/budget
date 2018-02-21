@@ -33,6 +33,12 @@ def try_get_json(path):
         print(e)
         return dict()
 
+def get_table(path):
+    with open(path) as csv:
+        table = DictReader(csv)
+        return list(table)
+
+
 class Data():
     def __init__(self, configPath):
         self.paths = get_json(configPath)
@@ -47,14 +53,16 @@ class Data():
         return try_get_json(self.paths['budget'])['expenses']
 
     def get_descriptions(self):
-        with open(self.paths['activity']) as csv:
-            table = DictReader(csv)
-            return [row['Description'] for row in table]
+        activity = self.get_activity()
+        return [transaction['Description'] for transaction in activity]
 
     def get_conditioned_descriptions(self):
         noise = self.get_noise()
         raw_descriptions = self.get_descriptions()
         return filter_noise(raw_descriptions, noise)
+
+    def get_activity(self):
+        return get_table(self.paths['activity'])        
 
     def save_categories(self, categoryMap):
         save_json(categoryMap.to_json(), self.paths['categories'])

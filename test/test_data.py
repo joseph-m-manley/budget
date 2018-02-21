@@ -24,12 +24,15 @@ class TestData(Test):
 
     def test_data(self):
         data = Data(self.path)
-        self.assertTrue(isinstance(data.get_descriptions(), (list, set)))
-        self.assertTrue(isinstance(data.get_conditioned_descriptions(), (list, set)))
-        self.assertTrue(isinstance(data.get_noise(), list))
-        self.assertTrue(isinstance(data.get_categories(), (CategoryMap, dict)))
-        self.assertTrue(isinstance(data.get_budget(), dict))
+        self.assertIsInstance(data.get_descriptions(), (list, set))
+        self.assertIsInstance(data.get_conditioned_descriptions(), (list, set))
+        self.assertIsInstance(data.get_noise(), list)
+        self.assertIsInstance(data.get_categories(), (CategoryMap, dict))
+        self.assertIsInstance(data.get_budget(), dict)
+        self.assertIsInstance(data.get_activity(), list)
 
+
+class TestFilterNoise(Test):
     def test_filter_noise(self):
         words = ['hello xxxx1234', 'foo world', 'its#9999', '    me   ']
         noise = ["foo", "#\\d+", "X+\\d{4}"]
