@@ -21,7 +21,7 @@ class Categorizer():
 
 
 def main():
-    data = Data('data.json')
+    data = Data('config.json')
     known_categories = data.get_categories()
     categorizer = Categorizer(known_categories)
 
