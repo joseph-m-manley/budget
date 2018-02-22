@@ -2,6 +2,7 @@
 /user
 .vscode/
 setup.cfg
+config.json
 *~
 
 # Byte-compiled / optimized / DLL files

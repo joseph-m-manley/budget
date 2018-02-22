@@ -1,6 +1,0 @@
-{
-    "activity": "user/depositAcctivityExport.csv",
-    "categories": "user/categories.json",
-    "noise": "user/noise.json",
-    "budget": "user/budget.json"
-}
