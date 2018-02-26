@@ -7,51 +7,44 @@ from unittest import TestCase as Test
 
 class TestInputAskForKeyword(Test):
     def test_asks_for_key_for_descriptions_longer_than_15_char(self):
-        expected = 'string'
-        print(expected)
-        actual = Input().ask_for_key('what you need to type is \'string\'')
+        expected = 'STRING'
+        actual = Input().ask_for_key('what you need to type is \'%s\'' % expected)
 
         self.assertEqual(expected, actual)
 
     def test_does_not_ask_for_key_for_descriptions_shorter_than_15_char(self):
-        expected = 'short'
-        actual = Input().ask_for_key('short')
-        self.assertEqual(expected, actual)
-
-    def test_ask_for_key_does_not_alter_case(self):
-        expected = "PascalCasedCategory"
+        expected = 'SHORT'
         actual = Input().ask_for_key(expected)
+
         self.assertEqual(expected, actual)
 
-        expected = "UPPERCASE CATEGORY"
+    def test_defaults_to_description_when_no_input_is_given(self):
+        expected = 'JUST PRESS ENTER'
         actual = Input().ask_for_key(expected)
-        self.assertEqual(expected, actual)
 
-        expected = "lowercase category"
-        actual = Input().ask_for_key(expected.upper())
-        self.assertNotEqual(expected, actual)
+        self.assertEqual(expected, actual)
 
 
 class TestInputAskForCategory(Test):
     def test_ask_for_category(self):
-        expected = 'hello'
-        print(expected)
-        actual = Input().ask_for_category('expected: \'hello\'')
-
-        self.assertEqual(expected, actual)
-
-    def test_ask_for_category_does_not_alter_case(self):
-        expected = "PascalCase"
+        expected = 'HELLO'
         actual = Input().ask_for_category(expected)
+
         self.assertEqual(expected, actual)
 
+
+class TestCaseSensitivity(Test):
+    def test_ask_for_category_returns_upper_case(self):
         expected = "UPPERCASE"
         actual = Input().ask_for_category(expected)
-        self.assertEqual(expected, actual)
 
-        expected = "lowercase"
-        actual = Input().ask_for_category(expected.upper())
-        self.assertNotEqual(expected, actual)
+        self.assertEqual(expected, actual)
+           
+    def test_ask_for_key_returns_upper_case(self):
+        expected = "UPPERCASE CATEGORY"
+        actual = Input().ask_for_key(expected)
+
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

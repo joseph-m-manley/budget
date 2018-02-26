@@ -41,13 +41,12 @@ class CategoryMap():
         return self.d[category]
 
     def add(self, category, keyword):
-        c, k = category.lower(), keyword.lower()
-        self.__safe_get(c).append(k)
-        self.keywords.add(k)
+        self.__safe_get(category).append(keyword)
+        self.keywords.add(keyword)
 
     def keyword_exists(self, description):
         for keyword in self.keywords:
-            if keyword in description:
+            if keyword.upper() in description.upper():
                 return True
         return False
 

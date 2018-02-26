@@ -1,5 +1,4 @@
-from budget.categorizer import categorize
-from budget.categorizer import Categorizer
+from budget.Categorizer import Categorizer
 from budget.CategoryMap import CategoryMap
 from unittest import TestCase as Test, main
 
