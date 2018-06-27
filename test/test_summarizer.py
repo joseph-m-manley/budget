@@ -1,4 +1,4 @@
-from budget import summarizer
+from budget import Summarizer
 from unittest import TestCase as Test, main
 
 
@@ -9,11 +9,11 @@ class TestGetTransactionAmount(Test):
         error_case = {'Withdrawals': '', 'Deposits': ''}
 
         self.assertAlmostEqual(
-            45.0, summarizer.get_transaction_amount(withdrawal))
+            45.0, Summarizer.get_transaction_amount(withdrawal))
         self.assertAlmostEqual(
-            30.0, summarizer.get_transaction_amount(deposit))
+            30.0, Summarizer.get_transaction_amount(deposit))
         self.assertAlmostEqual(
-            0.0, summarizer.get_transaction_amount(error_case))
+            0.0, Summarizer.get_transaction_amount(error_case))
 
 
 class TestInvertDict(Test):
@@ -21,7 +21,7 @@ class TestInvertDict(Test):
         dict_to_invert = {1: [1, 2, 3], 2: [4, 5, 6], 3: [7, 8, 9]}
         expected = {1: 1, 2: 1, 3: 1, 4: 2, 5: 2, 6: 2, 7: 3, 8: 3, 9: 3}
 
-        actual = summarizer.invert_dict(dict_to_invert)
+        actual = Summarizer.invert_dict(dict_to_invert)
 
         self.assertEqual(list(expected.keys()), list(actual.keys()))
         for key in expected:
@@ -34,8 +34,8 @@ class TestIsRelevant(Test):
         description = 'darkness'
         non_matching_descr = 'sandwich'
 
-        self.assertTrue(summarizer.is_relevant(transaction, description))
-        self.assertFalse(summarizer.is_relevant(transaction, non_matching_descr))
+        self.assertTrue(Summarizer.is_relevant(transaction, description))
+        self.assertFalse(Summarizer.is_relevant(transaction, non_matching_descr))
 
 
 class TestSummarizer(Test):
@@ -64,11 +64,11 @@ class TestSummarizer(Test):
         ]
 
         expected = {'food': 25.0, 'gas': 15.5, 'bill': 50.25, 'income': 1000.0}
-        actual = summarizer.summarize(self.categories, activity)
+        actual = Summarizer.summarize(self.categories, activity)
 
         self.assertSummariesEqual(expected, actual)
 
-    def test_summarizer_ignores_uknown_activity(self):
+    def test_Summarizer_ignores_uknown_activity(self):
         activity = [
             {'Description': 'kroger #450', 'Withdrawals': '$10.0', 'Deposits': ''},
             {'Description': 'who knows', 'Withdrawals': '$5.0', 'Deposits': ''},
@@ -78,7 +78,7 @@ class TestSummarizer(Test):
         ]
 
         expected = {'food': 10.0, 'gas': 15.5, 'bill': 25.0, 'income': 0.0}
-        actual = summarizer.summarize(self.categories, activity)
+        actual = Summarizer.summarize(self.categories, activity)
 
         self.assertSummariesEqual(expected, actual)
 
@@ -89,7 +89,7 @@ class TestSubtractExpenses(Test):
         expenses = {'one': 23.5, 'two': 11.3, 'three': 1.0}
 
         expectedRemaining = {'one': 27.0, 'two': 10.4, 'three': 33.7}
-        actualRemaining = summarizer.subtract_expenses(budget, expenses)
+        actualRemaining = Summarizer.subtract_expenses(budget, expenses)
 
         self.assertDictEqual(expectedRemaining, actualRemaining)
 
@@ -97,7 +97,7 @@ class TestSubtractExpenses(Test):
 class TestCalculateTotals(Test):
     def test_ignores_empty_budget(self):
         expenses = {'one': 1, 'two': 2, 'three': 3}
-        budget = summarizer.calculate_totals(dict(), expenses)
+        budget = Summarizer.calculate_totals(dict(), expenses)
 
         expectedBudget = {'expenses': expenses}
 

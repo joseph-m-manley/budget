@@ -3,6 +3,7 @@ class CategoryMap():
         self.d = dict()
         self.keywords = set()
         for category in intializerDict:
+            self.d[category] = list()
             for keyword in intializerDict[category]:
                 self.add(category, keyword)
 
@@ -35,18 +36,20 @@ class CategoryMap():
     def get(self, category):
         return self.d[category]
 
-    def __safe_get(self, category):
+    def __get_or_make_category(self, category):
         if category not in self.d:
             self.d[category] = []
         return self.d[category]
 
     def add(self, category, keyword):
-        self.__safe_get(category).append(keyword)
+        category = category.lower()
+        keyword = keyword.lower()
+        self.__get_or_make_category(category).append(keyword)
         self.keywords.add(keyword)
 
     def keyword_exists(self, description):
         for keyword in self.keywords:
-            if keyword.upper() in description.upper():
+            if keyword.lower() in description.lower():
                 return True
         return False
 

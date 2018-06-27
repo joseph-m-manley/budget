@@ -64,7 +64,7 @@ class TestCategoryMapKeywordExists(Test):
     def test_finds_keyword_among_noise(self):
         c = CategoryMap(hello_world_its_me)
         
-        description = 'zim zam BORKBIRK.important-stuff-obfuscated-hereXXXX9990'
+        description = 'zim zam BORKBIRK.hello-XXXX9990'
 
         self.assertTrue(c.keyword_exists(description))
 
